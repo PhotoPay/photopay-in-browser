@@ -1,7 +1,7 @@
 import sourceMaps from 'rollup-plugin-sourcemaps'
 import typescript from 'rollup-plugin-typescript3'
 import { terser } from 'rollup-plugin-terser'
-import resolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve';
 import copy from 'rollup-plugin-copy'
 
 export default
