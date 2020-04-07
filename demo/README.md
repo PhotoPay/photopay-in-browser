@@ -1,19 +1,25 @@
 Instructions for building and running this sample app
 =====================================================
 
-1. Install all dependencies:
+1. Install the SDK:
+
+    cd ..
+    npm install
+    cd -
+
+2. Install all dependencies of the demo app:
 
     npm install
 
-2. Build the project
+3. Build the project
 
     npm run build
 
-3. Run the server that will serve the page
+4. Run the server that will serve the page
 
     npm start
 
-4. Open [https://localhost](https://localhost) in your browser. Accept the risk of using self-signed certificate and the page will load.
+5. Open [https://localhost](https://localhost) in your browser. Accept the risk of using self-signed certificate and the page will load.
 
 ### HTTPS note
 
