@@ -1,6 +1,6 @@
-# _PhotoPay_ SDK for the Web Browser
+# _PhotoPay_ In-BrOwSeR SDK
 
-_PhotoPay_ SDK for the Web Browser enables you to perform scans of various payment barcodes in your web app, directly within the web browser, without the need for sending the image to servers for processing. You can integrate the SDK into your web app simply by following the instructions below and your web app will be able to scan and process data from the payment barcodes of various national standards. For list of all supported standards, check [this paragraph](#photopay_recognizers).
+_PhotoPay_ In-BrOwSeR SDK enables you to perform scans of various payment barcodes in your web app, directly within the web browser, without the need for sending the image to servers for processing. You can integrate the SDK into your web app simply by following the instructions below and your web app will be able to scan and process data from the payment barcodes of various national standards. For list of all supported standards, check [this paragraph](#photopay_recognizers).
 
 Using _PhotoPay_ in your web app requires a valid license key. You can obtain a trial license key by registering to [Microblink dashboard](https://microblink.com/login). After registering, you will be able to generate a license key for your web app. The license key is bound to [fully qualified domain name](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of your web app, so please make sure you enter the correct name when asked. Also, keep in mind that if you plan to serve your web app from different domains, you will need different license keys.
 
