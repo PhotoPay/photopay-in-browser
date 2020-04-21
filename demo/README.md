@@ -3,21 +3,29 @@ Instructions for building and running this sample app
 
 1. Install the SDK:
 
-    cd ..
-    npm install
-    cd -
+```
+cd ..
+npm install
+cd -
+```
 
 2. Install all dependencies of the demo app:
 
-    npm install
+```
+npm install
+```
 
 3. Build the project
 
-    npm run build
+```
+npm run build
+```
 
-4. Run the server that will serve the page
+4. Run the server that will serve the page. Note that on the first ever start of https server you may be asked for Administrator password, in order to generate a self-signed certificate.
 
-    npm start
+```
+npm start
+```
 
 5. Open [https://localhost](https://localhost) in your browser. Accept the risk of using self-signed certificate and the page will load.
 
