@@ -1,12 +1,14 @@
 # _PhotoPay_ In-browser SDK
 
-[![Build Status](https://travis-ci.org/PhotoPay/photopay-web.svg?branch=master)](https://travis-ci.org/PhotoPay/photopay-web) [![npm version](https://badge.fury.io/js/%40microblink%2Fphotopay-web.svg)](https://badge.fury.io/js/%40microblink%2Fphotopay-web)
+[![Build Status](https://travis-ci.org/PhotoPay/photopay-in-browser.svg?branch=master)](https://travis-ci.org/PhotoPay/photopay-in-browser) [![npm version](https://badge.fury.io/js/%40microblink%2Fphotopay-in-browser-sdk.svg)](https://badge.fury.io/js/%40microblink%2Fphotopay-in-browser-sdk)
 
 _PhotoPay_ In-browser SDK enables you to perform scans of various payment barcodes in your web app, directly within the web browser, without the need for sending the image to servers for processing. You can integrate the SDK into your web app simply by following the instructions below and your web app will be able to scan and process data from the payment barcodes of various national standards. For list of all supported standards, check [this paragraph](#photopay_recognizers).
 
 Using _PhotoPay_ in your web app requires a valid license key. You can obtain a trial license key by registering to [Microblink dashboard](https://microblink.com/login). After registering, you will be able to generate a license key for your web app. The license key is bound to [fully qualified domain name](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of your web app, so please make sure you enter the correct name when asked. Also, keep in mind that if you plan to serve your web app from different domains, you will need different license keys.
 
-For more information on how to integrate __PhotoPay__ SDK into your web app read the instructions below. Make sure you read the latest [Release notes](Release%20notes.md) for most recent changes and improvements. For a quick demo, check out our [integration sample app](demo).
+For more information on how to integrate _PhotoPay_ SDK into your web app read the instructions below. Make sure you read the latest [Release notes](Release%20notes.md) for most recent changes and improvements. For a quick demo, check out our [integration sample app](demo).
+
+_PhotoPay_ In-browser SDK is meant to be used natively in a web browser. It will not work correctly within a iOS/Android WebView or NodeJS backend service.
 
 # Table of contents
 
@@ -58,7 +60,7 @@ _PhotoPay_ requires a browser with a support for [WebAssembly](https://webassemb
 The easiest way to add _PhotoPay_ as a dev-dependency to your project is by using NPM:
 
 ```
-npm install @microblink/photopay-web --save-dev
+npm install @microblink/photopay-in-browser-sdk --save-dev
 ```
 
 or, if you wish to add a local package instead:
@@ -70,7 +72,7 @@ cd /path/to/your/app/folder
 npm install /path/to/SDK/folder --save-dev
 ```
 
-After adding the _@microblink/photopay-web_ as your dev-dependency, make sure to include all files from its `build` folder in your distribution. Those files contain compiled WebAssembly module and support JS code for loading it, as well as resources needed for _PhotoPay_ to work.
+After adding the _@microblink/photopay-in-browser-sdk_ as your dev-dependency, make sure to include all files from its `build` folder in your distribution. Those files contain compiled WebAssembly module and support JS code for loading it, as well as resources needed for _PhotoPay_ to work.
 
 The example in the [demo app](demo) shows how a [rollup copy plugin](https://www.npmjs.com/package/rollup-plugin-copy) can be used to achieve that. Check the [rollup.config.js](demo/rollup.config.js) from the demo app.
 
@@ -81,7 +83,7 @@ The example in the [demo app](demo) shows how a [rollup copy plugin](https://www
 2. Initialize the SDK using following code snippet:
 
     ```typescript
-    import * as MicroblinkSDK from '@microblink/photopay-web'
+    import * as MicroblinkSDK from '@microblink/photopay-in-browser-sdk'
 
     // check if browser is supported
     if ( MicroblinkSDK.isBrowserSupported() ) {
@@ -105,7 +107,7 @@ The example in the [demo app](demo) shows how a [rollup copy plugin](https://www
 3. Create recognizer objects that will perform image recognition, configure them and use them to create a `RecognizerRunner` object:
 
     ```typescript
-    import * as MicroblinkSDK from '@microblink/photopay-web'
+    import * as MicroblinkSDK from '@microblink/photopay-in-browser-sdk'
 
     const recognizer = await MicroblinkSDK.createCroatiaPdf417PaymentRecognizer(wasmSDK);
     const recognizerRunner = await MicroblinkSDK.createRecognizerRunner(wasmSDK, [recognizer], true);
@@ -200,7 +202,7 @@ Each `Recognizer` has a `Result` object, which contains the data that was extrac
 Every `Recognizer` is a stateful object that can be in two possible states: _idle state_ and _working state_. While in _idle state_, you are allowed to call method `updateSettings` which will update its properties according to given settings object. At any time, you can call its `currentSettings` method to obtain its currently applied settings object. After you create a `RecognizerRunner` with array containing your recognizer, the state of the `Recognizer` will change to _working state_, in which `Recognizer` object will be used for processing. While being in _working state_, it is not possible to call method `updateSettings` (calling it will crash your web app). If you need to change configuration of your recognizer while its being used, you need to call its `currentSettings` method to obtain its current configuration, update it as you need it, create a new `Recognizer` of the same type, call `updateSettings` on it with your modified configuration and finally replace the original `Recognizer` within the `RecognizerRunner` by calling its `reconfigureRecognizers` method. When written as a pseudocode, this would look like:
 
 ```typescript
-import * as MicroblinkSDK from '@microblink/photopay-web'
+import * as MicroblinkSDK from '@microblink/photopay-in-browser-sdk'
 
 // assume myRecognizerInUse is used by the recognizerRunner
 const currentSettings = await myRecognizerInUse.currentSettings();
@@ -290,7 +292,7 @@ videoRecognizer.startRecognition
 
 # <a name="metadataCallbacks"></a> Handling processing events with `MetadataCallbacks`
 
-Processing events, also known as _Metadata callbacks_ are purely intended for giving processing feedback on UI or to capture some debug information during development of your web app using _PhotoPay_ SDK. Callbacks for all events are bundled into the [MetadataCallbacks](src/MetadataCallbacks.ts) object. We suggest that you check for more information about available callbacks and events to which you can handle in the [source code of the `MetadataCallbacks` interface](src/MetadataCallbacks.ts).
+Processing events, also known as _Metadata callbacks_ are purely intended for giving processing feedback on UI or to capture some debug information during development of your web app using _PhotoPay_ SDK. Callbacks for all events are bundled into the [MetadataCallbacks](src/MicroblinkSDK/MetadataCallbacks.ts) object. We suggest that you check for more information about available callbacks and events to which you can handle in the [source code of the `MetadataCallbacks` interface](src/MicroblinkSDK/MetadataCallbacks.ts).
 
 You can associate your implementation of `MetadataCallbacks` interface with `RecognizerRunner` either during creation or by invoking its method `setMetadataCallbacks`. Please note that both those methods need to pass information about available callbacks to the native code and for efficiency reasons this is done at the time `setMetadataCallbacks` method is called and **not every time** when change occurs within the `MetadataCallbacks` object. This means that if you, for example, set `onQuadDetection` to `MetadataCallbacks` after you already called `setMetadataCallbacks` method, the `onQuadDetection` will not be registered with the native code and therefore it will not be called.
 

@@ -50,7 +50,7 @@ export default
                             dest: 'build'
                         },
                         {
-                            src: 'node_modules/@microblink/photopay-web/build/*',
+                            src: 'node_modules/@microblink/photopay-in-browser-sdk/build/*',
                             dest: 'build'
                         }
                     ]
