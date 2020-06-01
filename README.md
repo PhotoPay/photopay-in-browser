@@ -4,7 +4,7 @@
 
 _PhotoPay_ In-browser SDK enables you to perform scans of various payment barcodes in your web app, directly within the web browser, without the need for sending the image to servers for processing. You can integrate the SDK into your web app simply by following the instructions below and your web app will be able to scan and process data from the payment barcodes of various national standards. For list of all supported standards, check [this paragraph](#photopay_recognizers).
 
-Using _PhotoPay_ in your web app requires a valid license key. You can obtain a trial license key by registering to [Microblink dashboard](https://microblink.com/login). After registering, you will be able to generate a license key for your web app. The license key is bound to [fully qualified domain name](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of your web app, so please make sure you enter the correct name when asked. Also, keep in mind that if you plan to serve your web app from different domains, you will need different license keys.
+Using _PhotoPay_ in your web app requires a valid license key. You can obtain a free trial license key by registering to [Microblink dashboard](https://microblink.com/login). After registering, you will be able to generate a license key for your web app. The license key is bound to [fully qualified domain name](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of your web app, so please make sure you enter the correct name when asked. Also, keep in mind that if you plan to serve your web app from different domains, you will need different license keys.
 
 For more information on how to integrate _PhotoPay_ SDK into your web app read the instructions below. Make sure you read the latest [Release notes](Release%20notes.md) for most recent changes and improvements. For a quick demo, check out our [integration sample app](demo).
 
@@ -78,7 +78,7 @@ The example in the [demo app](demo) shows how a [rollup copy plugin](https://www
 
 ## <a name="firstScan"></a> Performing your first scan
 
-1. First you will need to create an account at [Microblink dashboard](https://microblink.com/login) where you can generate a demo license for your web app. License is bound to [fully qualified domain name](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of your web app, so please make sure you enter the correct name when asked.
+1. First you will need to create an account at [Microblink dashboard](https://microblink.com/login) where you can generate a free trial license for your web app. License is bound to [fully qualified domain name](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of your web app, so please make sure you enter the correct name when asked.
 
 2. Initialize the SDK using following code snippet:
 
