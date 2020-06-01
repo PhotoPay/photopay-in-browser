@@ -1,6 +1,7 @@
 import * as MicroblinkSDK from '@microblink/photopay-in-browser-sdk'
 
-const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPig/w35CpHnVKlreBu8vPPBPHuWSBrwGyIO8bE+7puJobI/aZ0CX2+wvR+8BRkhRRKXTgzj371MFLbvpIgObIUnTKN7XhgSgvy82R9ZfHZzKKt7pJgle2JGw7Wx7QvqV9ObNLPub06nEPAK6UbTrjcXEWCqWrk6gHBcr1lHxoUqGnsSM52g9kITYvWuuPqOQKRhcucitJenrM6bxYY0AEcuoyIeJzWNkDKbYZ0hRqO1t+q309jXfFyvGTNsV5LMuUCDNErR+QV2WCXe5gANUodQ=";
+// demo key for localhost, valid until: 2020-08-30
+const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPig/w35CpHnVLiw/ZLzoiJ3T28Mey54zj9LcqC0vUknItos9a6l51TdKRl/d5f/wFiEP+WO3yG1a8/OPQR7aOrkL/g2fbKPdxPKu3iGT1XU0BO3LaRvv0KWlRwpMtnb7CWU6zGUr0W2K54FuntUvzpGOEQCClx0VAdmW/+qE/lWabfkDZ8ZwsKH4z3Fzmflfg1MYkjiG4OmZN3fqOwwVbjbbBOoWwOHcKI2f8wHlf+ts6bVvV9bUiNYwtMrMRt/n3Ecy1gUIcmgbSdfSHQ==";
 
 // create a load settings, defining the license key and name of the WebAssembly module
 const loadSettings = new MicroblinkSDK.WasmSDKLoadSettings( licenseKey );
