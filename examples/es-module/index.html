@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>PhotoPay</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <div id="app" class="hidden">
+
+            <input type="button" id="doCameraScan" value="Scan from camera">
+            <input type="button" id="doFileScan" value="Scan from file">
+
+            <div id="file-scan" hidden>
+                <input type="file" accept="image/*" id="imageInput" capture="environment">
+                <img id="imageToProcess" style="max-width: 320px;">
+            </div>
+
+            <div id="camera-scan" hidden>
+                <video id="camera-feed" style="max-width: 100%;" playsinline></video>
+                <canvas id="camera-feedback" ></canvas>
+
+                <br />
+                <button id="cancel-video-scan">Cancel</button>
+            </div>
+
+            <div id="recognizers" style="overflow:auto">
+
+                <div class="menu">
+                    <h3> PhotoPay recognizers </h3>
+
+                    <h4> Austria </h4>
+                    <label for="ausQRRecognizerEnabled">Austrian Payment QR code recognizer:</label><input type="checkbox" id="ausQRRecognizerEnabled" onclick="app.toggleAustriaQRCodeRecognizer()"> <br/>
+                    <h4> Croatia </h4>
+                    <label for="croPDF417RecognizerEnabled">Croatian Payment PDF417 barcode recognizer:</label><input type="checkbox" id="croPDF417RecognizerEnabled" onclick="app.toggleCroatianPDF417Recognizer()"> <br/>
+                    <label for="croQRRecognizerEnabled">Croatian Payment QR code recognizer:</label><input type="checkbox" id="croQRRecognizerEnabled" onclick="app.toggleCroatianQRCodeRecognizer()"> <br/>
+                    <h4> Czechia </h4>
+                    <label for="czQRRecognizerEnabled">Czech Payment QR code recognizer:</label><input type="checkbox" id="czQRRecognizerEnabled" onclick="app.toggleCzechQRCodeRecognizer()"> <br/>
+                    <h4> Germany </h4>
+                    <label for="deQRRecognizerEnabled">German Payment QR code recognizer:</label><input type="checkbox" id="deQRRecognizerEnabled" onclick="app.toggleGermanQRCodeRecognizer()"> <br/>
+                    <h4> Kosovo </h4>
+                    <label for="kosCode128RecognizerEnabled">Kosovo Payment Code128 barcode recognizer:</label><input type="checkbox" id="kosCode128RecognizerEnabled" onclick="app.toggleKosovoCode128Recognizer()"> <br/>
+                    <h4> SEPA </h4>
+                    <label for="sepaQRRecognizerEnabled">SEPA QR code recognizer:</label><input type="checkbox" id="sepaQRRecognizerEnabled" onclick="app.toggleSEPAQRRecognizer()"> <br/>
+                    <h4> Serbia </h4>
+                    <label for="serbPDF417RecognizerEnabled">Serbian payment PDF417 2D barcode recognizer:</label><input type="checkbox" id="serbPDF417RecognizerEnabled" onclick="app.toggleSerbiaPdf417Recognizer()"> <br/>
+                    <label for="serbQRCodeRecognizerEnabled">Serbian payment QR code recognizer:</label><input type="checkbox" id="serbQRCodeRecognizerEnabled" onclick="app.toggleSerbiaQRRecognizer()"> <br/>
+                    <h4> Slovakia </h4>
+                    <label for="skCode128RecognizerEnabled">Slovak payment Code 128 barcode recognizer:</label><input type="checkbox" id="skCode128RecognizerEnabled" onclick="app.toggleSlovakCode128Recognizer()"> <br/>
+                    <label for="skDataMatrixRecognizerEnabled">Slovak payment Data Matrix code recognizer:</label><input type="checkbox" id="skDataMatrixRecognizerEnabled" onclick="app.toggleSlovakDataMatrixRecognizer()"> <br/>
+                    <label for="skQRRecognizerEnabled">Slovak payment QR code recognizer:</label><input type="checkbox" id="skQRRecognizerEnabled" onclick="app.toggleSlovakQRRecognizer()"> <br/>
+                    <h4> Slovenia </h4>
+                    <label for="sloQRRecognizerEnabled">Slovenian payment QR code recognizer:</label><input type="checkbox" id="sloQRRecognizerEnabled" onclick="app.toggleSlovenianQRRecognizer()"> <br/>
+                    <h4> Switzerland </h4>
+                    <label for="swissQRRecognizerEnabled">Swiss payment QR code recognizer:</label><input type="checkbox" id="swissQRRecognizerEnabled" onclick="app.toggleSwissQRRecognizer()"> <br/>
+                </div>
+
+            </div>
+
+            <div id="results" hidden>
+                <h2>Results</h2>
+                <textarea rows="50" cols="70"></textarea>
+                <br />
+                <button id="scan-again">Scan again</button>
+            </div>
+
+        </div>
+
+        <div id="messages">
+
+            <h1>Loading...</h1>
+
+        </div>
+
+    </body>
+    
+    <script type="module" src="main.js"></script>
+</html>

@@ -1,18 +1,24 @@
-import { Recognizer, RecognizerResult, RecognizerSettings, WasmSDK } from '../../../MicroblinkSDK/DataStructures'
+import
+{
+    Recognizer,
+    RecognizerResult,
+    RecognizerSettings,
+    WasmSDK
+} from "../../../MicroblinkSDK/DataStructures";
 
 /**
  * A settings object that is used for configuring the CroatiaQrCodePaymentRecognizer.
  */
 export class CroatiaQrCodePaymentRecognizerSettings implements RecognizerSettings
 {
-    
     /**
-     *  Defines if the recognizer should go slower through scan.
-     *   If slowerThoroughScan is enabled, then scanning will be slower, but more thorough, thus giving higher possibility of successful scan.
-     *   By default, slowerThoroguhScan is disabled.
+     * Defines if the recognizer should go slower through scan. If slowerThoroughScan is enabled,
+     * then scanning will be slower, but more thorough, thus giving higher possibility of successful
+     * scan.
+     *
+     * By default, slowerThoroughScan is disabled.
      */
     slowerThoroughScan = true;
-    
 }
 
 /**
@@ -20,7 +26,7 @@ export class CroatiaQrCodePaymentRecognizerSettings implements RecognizerSetting
  */
 export interface CroatiaQrCodePaymentRecognizerResult extends RecognizerResult
 {
-    
+
 }
 
 /**
@@ -42,7 +48,13 @@ export interface CroatiaQrCodePaymentRecognizer extends Recognizer
  * This function is used to create a new instance of `CroatiaQrCodePaymentRecognizer`.
  * @param wasmSDK Instance of WasmSDK which will be used to communicate with the WebAssembly module.
  */
-export async function createCroatiaQrCodePaymentRecognizer( wasmSDK: WasmSDK ): Promise< CroatiaQrCodePaymentRecognizer >
+export async function createCroatiaQrCodePaymentRecognizer
+(
+    wasmSDK: WasmSDK
+): Promise< CroatiaQrCodePaymentRecognizer >
 {
-    return wasmSDK.mbWasmModule.newRecognizer( "CroatiaQrCodePaymentRecognizer" ) as Promise< CroatiaQrCodePaymentRecognizer >;
+    return wasmSDK.mbWasmModule.newRecognizer
+    (
+        "CroatiaQrCodePaymentRecognizer"
+    ) as Promise< CroatiaQrCodePaymentRecognizer >;
 }

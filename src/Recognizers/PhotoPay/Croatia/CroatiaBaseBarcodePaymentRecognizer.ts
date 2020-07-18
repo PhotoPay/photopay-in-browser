@@ -1,4 +1,9 @@
-import { RecognizerResult, RecognizerSettings, MBDate } from '../../../MicroblinkSDK/DataStructures'
+import
+{
+    RecognizerResult,
+    RecognizerSettings,
+    MBDate
+} from "../../../MicroblinkSDK/DataStructures";
 
 /**
  * A settings object that is used for configuring the CroatiaBaseBarcodePaymentRecognizer.
@@ -27,7 +32,6 @@ export enum CroatiaBarcodeSlipIdType
  */
 export interface CroatiaBaseBarcodePaymentRecognizerResult extends RecognizerResult
 {
-
     /**
      *  The account number to which the payment goes
      */
@@ -152,5 +156,4 @@ export interface CroatiaBaseBarcodePaymentRecognizerResult extends RecognizerRes
      *  The uncertain
      */
     readonly uncertain: boolean;
-
 }

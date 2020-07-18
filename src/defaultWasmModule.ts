@@ -1,1 +1,1 @@
-export const defaultWasmModuleName = 'PhotoPayWasmSDK';
+export const defaultWasmModuleName = "PhotoPayWasmSDK";

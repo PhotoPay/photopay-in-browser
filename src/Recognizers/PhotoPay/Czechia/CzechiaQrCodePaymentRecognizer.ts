@@ -1,24 +1,32 @@
-import { Recognizer, RecognizerResult, RecognizerSettings, MBDate, WasmSDK } from '../../../MicroblinkSDK/DataStructures'
+import
+{
+    Recognizer,
+    RecognizerResult,
+    RecognizerSettings,
+    MBDate,
+    WasmSDK
+} from "../../../MicroblinkSDK/DataStructures";
 
 /**
  * A settings object that is used for configuring the CzechiaQrCodePaymentRecognizer.
  */
 export class CzechiaQrCodePaymentRecognizerSettings implements RecognizerSettings
 {
-
     /**
-     *  Defines if the recognizer should go slower through scan.
-     *  If slowerThoroughScan is enabled, then scanning will be slower, but more thorough, thus giving higher possibility of successful scan.
-     *  By default, slowerThoroughScan is disabled.
+     * Defines if the recognizer should go slower through scan. If slowerThoroughScan is enabled,
+     * then scanning will be slower, but more thorough, thus giving higher possibility of successful
+     * scan.
+     *
+     * By default, slowerThoroughScan is disabled.
      */
-    slowerThoroughScan = false;
-
+    slowerThoroughScan = true;
 }
 
 export interface CzechiaAccountInfo
 {
     /** The IBAN of the account. */
     iban: string;
+
     /** The BIC/SWIFT code of the account. */
     bic: string;
 }
@@ -28,7 +36,6 @@ export interface CzechiaAccountInfo
  */
 export interface CzechiaQrCodePaymentRecognizerResult extends RecognizerResult
 {
-
     /**
      *  The default payment receiver account.
      */
@@ -93,7 +100,6 @@ export interface CzechiaQrCodePaymentRecognizerResult extends RecognizerResult
      *  The variable symbol.
      */
     readonly variableSymbol: string;
-
 }
 
 /**
@@ -105,7 +111,7 @@ export interface CzechiaQrCodePaymentRecognizer extends Recognizer
     currentSettings(): Promise< CzechiaQrCodePaymentRecognizerSettings >
 
     /** Applies new settings to the recognizer. */
-    updateSettings( newSettings: CzechiaQrCodePaymentRecognizerSettings ): Promise< void >;
+    updateSettings( newSettings:  CzechiaQrCodePaymentRecognizerSettings  ): Promise< void >;
 
     /** Returns the current result of the recognition. */
     getResult(): Promise< CzechiaQrCodePaymentRecognizerResult >;
@@ -115,7 +121,13 @@ export interface CzechiaQrCodePaymentRecognizer extends Recognizer
  * This function is used to create a new instance of `CzechiaQrCodePaymentRecognizer`.
  * @param wasmSDK Instance of WasmSDK which will be used to communicate with the WebAssembly module.
  */
-export async function createCzechiaQrCodePaymentRecognizer( wasmSDK: WasmSDK ): Promise< CzechiaQrCodePaymentRecognizer >
+export async function createCzechiaQrCodePaymentRecognizer
+(
+    wasmSDK: WasmSDK
+): Promise< CzechiaQrCodePaymentRecognizer >
 {
-    return wasmSDK.mbWasmModule.newRecognizer( "CzechiaQrCodePaymentRecognizer" ) as Promise< CzechiaQrCodePaymentRecognizer >;
+    return wasmSDK.mbWasmModule.newRecognizer
+    (
+        "CzechiaQrCodePaymentRecognizer"
+    ) as Promise< CzechiaQrCodePaymentRecognizer >;
 }
