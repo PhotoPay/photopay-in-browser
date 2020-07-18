@@ -1,18 +1,25 @@
-import { Recognizer, RecognizerResult, MBDate, RecognizerSettings, WasmSDK } from '../../../MicroblinkSDK/DataStructures'
+import
+{
+    Recognizer,
+    RecognizerResult,
+    MBDate,
+    RecognizerSettings,
+    WasmSDK
+} from "../../../MicroblinkSDK/DataStructures";
 
 /**
  * A settings object that is used for configuring the SwitzerlandQrCodePaymentRecognizer.
  */
 export class SwitzerlandQrCodePaymentRecognizerSettings implements RecognizerSettings
 {
-
     /**
-     *  Defines if the recognizer should go slower through scan.
-     *  If slowerThoroughScan is enabled, then scanning will be slower, but more thorough, thus giving higher possibility of successful scan.
-     *  By default, slowerThoroughScan is disabled.
+     * Defines if the recognizer should go slower through scan. If slowerThoroughScan is enabled,
+     * then scanning will be slower, but more thorough, thus giving higher possibility of successful
+     * scan.
+     *
+     * By default, slowerThoroughScan is disabled.
      */
     slowerThoroughScan = false;
-
 }
 
 /**
@@ -20,7 +27,6 @@ export class SwitzerlandQrCodePaymentRecognizerSettings implements RecognizerSet
  */
 export interface SwitzerlandQrCodePaymentRecognizerResult extends RecognizerResult
 {
-
     /**
      *  The payment additional information.
      */
@@ -165,7 +171,6 @@ export interface SwitzerlandQrCodePaymentRecognizerResult extends RecognizerResu
      *  The street of the ultimate recipient.
      */
     readonly ultimateRecipientStreet: string;
-
 }
 
 /**
@@ -187,7 +192,13 @@ export interface SwitzerlandQrCodePaymentRecognizer extends Recognizer
  * This function is used to create a new instance of `SwitzerlandQrCodePaymentRecognizer`.
  * @param wasmSDK Instance of WasmSDK which will be used to communicate with the WebAssembly module.
  */
-export async function createSwitzerlandQrCodePaymentRecognizer( wasmSDK: WasmSDK ): Promise< SwitzerlandQrCodePaymentRecognizer >
+export async function createSwitzerlandQrCodePaymentRecognizer
+(
+    wasmSDK: WasmSDK
+): Promise< SwitzerlandQrCodePaymentRecognizer >
 {
-    return wasmSDK.mbWasmModule.newRecognizer( "SwitzerlandQrCodePaymentRecognizer" ) as Promise< SwitzerlandQrCodePaymentRecognizer >;
+    return wasmSDK.mbWasmModule.newRecognizer
+    (
+        "SwitzerlandQrCodePaymentRecognizer"
+    ) as Promise< SwitzerlandQrCodePaymentRecognizer >;
 }

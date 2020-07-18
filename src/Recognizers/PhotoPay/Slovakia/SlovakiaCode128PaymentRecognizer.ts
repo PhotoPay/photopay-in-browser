@@ -1,4 +1,10 @@
-import { Recognizer, RecognizerResult, RecognizerSettings, WasmSDK } from '../../../MicroblinkSDK/DataStructures'
+import
+{
+    Recognizer,
+    RecognizerResult,
+    RecognizerSettings,
+    WasmSDK
+} from "../../../MicroblinkSDK/DataStructures";
 
 /**
  * A settings object that is used for configuring the SlovakiaCode128PaymentRecognizer.
@@ -13,7 +19,6 @@ export class SlovakiaCode128PaymentRecognizerSettings implements RecognizerSetti
  */
 export interface SlovakiaCode128PaymentRecognizerResult extends RecognizerResult
 {
-
     /**
      *  The account number
      */
@@ -83,7 +88,6 @@ export interface SlovakiaCode128PaymentRecognizerResult extends RecognizerResult
      *  The variable symbol
      */
     readonly variableSymbol: string;
-
 }
 
 /**
@@ -105,7 +109,13 @@ export interface SlovakiaCode128PaymentRecognizer extends Recognizer
  * This function is used to create a new instance of `SlovakiaCode128PaymentRecognizer`.
  * @param wasmSDK Instance of WasmSDK which will be used to communicate with the WebAssembly module.
  */
-export async function createSlovakiaCode128PaymentRecognizer( wasmSDK: WasmSDK ): Promise< SlovakiaCode128PaymentRecognizer >
+export async function createSlovakiaCode128PaymentRecognizer
+(
+    wasmSDK: WasmSDK
+): Promise< SlovakiaCode128PaymentRecognizer >
 {
-    return wasmSDK.mbWasmModule.newRecognizer( "SlovakiaCode128PaymentRecognizer" ) as Promise< SlovakiaCode128PaymentRecognizer >;
+    return wasmSDK.mbWasmModule.newRecognizer
+    (
+        "SlovakiaCode128PaymentRecognizer"
+    ) as Promise< SlovakiaCode128PaymentRecognizer >;
 }

@@ -1,5 +1,11 @@
-import { Recognizer, RecognizerSettings, WasmSDK } from '../../../MicroblinkSDK/DataStructures'
-import { SerbiaBaseBarcodePaymentRecognizerResult } from './SerbiaBaseBarcodePaymentRecognizer'
+import
+{
+    Recognizer,
+    RecognizerSettings,
+    WasmSDK
+} from "../../../MicroblinkSDK/DataStructures";
+
+import { SerbiaBaseBarcodePaymentRecognizerResult } from "./SerbiaBaseBarcodePaymentRecognizer";
 
 /**
  * A settings object that is used for configuring the SerbiaPdf417PaymentRecognizer.
@@ -32,7 +38,13 @@ export interface SerbiaPdf417PaymentRecognizer extends Recognizer
  * This function is used to create a new instance of `SerbiaPdf417PaymentRecognizer`.
  * @param wasmSDK Instance of WasmSDK which will be used to communicate with the WebAssembly module.
  */
-export async function createSerbiaPdf417PaymentRecognizer( wasmSDK: WasmSDK ): Promise< SerbiaPdf417PaymentRecognizer >
+export async function createSerbiaPdf417PaymentRecognizer
+(
+    wasmSDK: WasmSDK
+): Promise< SerbiaPdf417PaymentRecognizer >
 {
-    return wasmSDK.mbWasmModule.newRecognizer( "SerbiaPdf417PaymentRecognizer" ) as Promise< SerbiaPdf417PaymentRecognizer >;
+    return wasmSDK.mbWasmModule.newRecognizer
+    (
+        "SerbiaPdf417PaymentRecognizer"
+    ) as Promise< SerbiaPdf417PaymentRecognizer >;
 }

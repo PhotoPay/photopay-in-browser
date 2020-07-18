@@ -1,0 +1,69 @@
+#cameraFeed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3;
+}
+#cameraFeedback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+}
+#debugStatus {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 2px 2px #000;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+#glareMsg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: xx-large;
+    color: #fff;
+    text-shadow: 2px 2px #000;
+}
+.menu {
+    float:left;
+    width:30%;
+}
+#results {
+    float:left;
+    width:70%;
+}
+.hidden {
+    display: none !important;
+}
+@media only screen and (max-width:1173px) {
+    /* For mobile phones: */
+    .menu, #results {
+        width:100%;
+    }
+}

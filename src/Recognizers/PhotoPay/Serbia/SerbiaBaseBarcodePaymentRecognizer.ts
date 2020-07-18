@@ -1,11 +1,10 @@
-import { RecognizerResult } from '../../../MicroblinkSDK/DataStructures'
+import { RecognizerResult } from "../../../MicroblinkSDK/DataStructures";
 
 /**
  * The result of image recognition when using the SerbiaBaseBarcodePaymentRecognizer.
  */
 export interface SerbiaBaseBarcodePaymentRecognizerResult extends RecognizerResult
 {
-
     /**
      *  The scanned amount in smallest currency (e.g. cents), 0 if nothing was scanned.
      */
@@ -115,5 +114,4 @@ export interface SerbiaBaseBarcodePaymentRecognizerResult extends RecognizerResu
      *  The indication if the payment barcode data is uncertain.
      */
     readonly uncertain: boolean;
-
 }

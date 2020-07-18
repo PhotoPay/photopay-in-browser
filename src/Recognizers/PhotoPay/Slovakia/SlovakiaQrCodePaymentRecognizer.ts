@@ -1,24 +1,32 @@
-import { Recognizer, RecognizerResult, RecognizerSettings, MBDate, WasmSDK } from '../../../MicroblinkSDK/DataStructures'
+import
+{
+    Recognizer,
+    RecognizerResult,
+    RecognizerSettings,
+    MBDate,
+    WasmSDK
+} from "../../../MicroblinkSDK/DataStructures";
 
 /**
  * A settings object that is used for configuring the SlovakiaQrCodePaymentRecognizer.
  */
 export class SlovakiaQrCodePaymentRecognizerSettings implements RecognizerSettings
 {
-
     /**
-     *  Defines if the recognizer should go slower through scan.
-     *  If slowerThoroughScan is enabled, then scanning will be slower, but more thorough, thus giving higher possibility of successful scan.
-     *  By default, slowerThoroughScan is disabled.
+     * Defines if the recognizer should go slower through scan. If slowerThoroughScan is enabled,
+     * then scanning will be slower, but more thorough, thus giving higher possibility of successful
+     * scan.
+     *
+     * By default, slowerThoroughScan is disabled.
      */
-    slowerThoroughScan = false;
-
+    slowerThoroughScan = true;
 }
 
 export interface SlovakiaAccountInfo
 {
     /** The IBAN of the account. */
     iban: string;
+
     /** The BIC/SWIFT code of the account. */
     bic: string;
 }
@@ -73,7 +81,6 @@ export interface SlovakiaQrPaymentInformation
  */
 export interface SlovakiaQrCodePaymentRecognizerResult extends RecognizerResult
 {
-
     /**
      *  The ID of invoice this payment refers to.
      */
@@ -83,7 +90,6 @@ export interface SlovakiaQrCodePaymentRecognizerResult extends RecognizerResult
      *  The payment information list.
      */
     readonly paymentInformationList: SlovakiaQrPaymentInformation[];
-
 }
 
 /**
@@ -105,7 +111,13 @@ export interface SlovakiaQrCodePaymentRecognizer extends Recognizer
  * This function is used to create a new instance of `SlovakiaQrCodePaymentRecognizer`.
  * @param wasmSDK Instance of WasmSDK which will be used to communicate with the WebAssembly module.
  */
-export async function createSlovakiaQrCodePaymentRecognizer( wasmSDK: WasmSDK ): Promise< SlovakiaQrCodePaymentRecognizer >
+export async function createSlovakiaQrCodePaymentRecognizer
+(
+    wasmSDK: WasmSDK
+): Promise< SlovakiaQrCodePaymentRecognizer >
 {
-    return wasmSDK.mbWasmModule.newRecognizer( "SlovakiaQrCodePaymentRecognizer" ) as Promise< SlovakiaQrCodePaymentRecognizer >;
+    return wasmSDK.mbWasmModule.newRecognizer
+    (
+        "SlovakiaQrCodePaymentRecognizer"
+    ) as Promise< SlovakiaQrCodePaymentRecognizer >;
 }

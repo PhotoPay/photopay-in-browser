@@ -1,4 +1,10 @@
-import { Recognizer, RecognizerResult, RecognizerSettings, WasmSDK } from '../../../MicroblinkSDK/DataStructures'
+import
+{
+    Recognizer,
+    RecognizerResult,
+    RecognizerSettings,
+    WasmSDK
+} from "../../../MicroblinkSDK/DataStructures";
 
 /**
  * A settings object that is used for configuring the KosovoCode128PaymentRecognizer.
@@ -20,7 +26,6 @@ export enum KosCode128SlipIDType
  */
 export interface KosovoCode128PaymentRecognizerResult extends RecognizerResult
 {
-
     /**
      *  The scanned amount in smallest currency (e.g. cents), 0 if nothing was scanned.
      */
@@ -70,7 +75,6 @@ export interface KosovoCode128PaymentRecognizerResult extends RecognizerResult
      *  Utility ID of the payment
      */
     readonly utilityID: string;
-
 }
 
 /**
@@ -92,7 +96,13 @@ export interface KosovoCode128PaymentRecognizer extends Recognizer
  * This function is used to create a new instance of `KosovoCode128PaymentRecognizer`.
  * @param wasmSDK Instance of WasmSDK which will be used to communicate with the WebAssembly module.
  */
-export async function createKosovoCode128PaymentRecognizer( wasmSDK: WasmSDK ): Promise< KosovoCode128PaymentRecognizer >
+export async function createKosovoCode128PaymentRecognizer
+(
+    wasmSDK: WasmSDK
+): Promise< KosovoCode128PaymentRecognizer >
 {
-    return wasmSDK.mbWasmModule.newRecognizer( "KosovoCode128PaymentRecognizer" ) as Promise< KosovoCode128PaymentRecognizer >;
+    return wasmSDK.mbWasmModule.newRecognizer
+    (
+        "KosovoCode128PaymentRecognizer"
+    ) as Promise< KosovoCode128PaymentRecognizer >;
 }
