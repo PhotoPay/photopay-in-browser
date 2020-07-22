@@ -6,7 +6,7 @@ _PhotoPay_ In-browser SDK enables you to perform scans of various payment barcod
 
 For more information on how to integrate the _PhotoPay_ SDK into your web app read the instructions below. Make sure you read the latest [changelog](CHANGELOG.md) for most recent changes and improvements.
 
-Check out [examples](examples) to see how to integrate the _PhotoPay_ SDK in different environments.
+Check out the [examples directory](examples) to see how to integrate the _PhotoPay_ SDK in different environments.
 
 _PhotoPay_ In-browser SDK is meant to be used natively in a web browser. It will not work correctly within a iOS/Android WebView or NodeJS backend service.
 
@@ -51,7 +51,7 @@ _PhotoPay_ In-browser SDK is meant to be used natively in a web browser. It will
 
 # <a name="integration"></a> Integration instructions
 
-This repository contains WebAssembly file and it's support JS files which contains the core implementation of _PhotoPay_ functionalities.
+This repository contains WebAssembly file and support JS files which contains the core implementation of _PhotoPay_ functionalities.
 
 In order to make integration of the WebAssembly easier and more developer friendly, a JavaScript/TypeScript support code is also provided, giving an easy to use integration API to the developer.
 
