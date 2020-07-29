@@ -486,7 +486,7 @@
 │  ├─ email: sebmck@gmail.com
 │  ├─ path: node_modules/@babel/types
 │  └─ licenseFile: node_modules/@babel/types/LICENSE
-├─ @microblink/photopay-in-browser-sdk@7.7.0
+├─ @microblink/photopay-in-browser-sdk@7.7.1
 │  ├─ licenses: Custom: https://travis-ci.org/PhotoPay/photopay-in-browser.svg
 │  ├─ repository: https://github.com/PhotoPay/photopay-in-browser
 │  ├─ path: /Users/mbp/Projects/core-webassembly-sdks/SDKs/PhotoPay/photopay-in-browser
