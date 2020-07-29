@@ -6,7 +6,9 @@ _PhotoPay_ In-browser SDK enables you to perform scans of various payment barcod
 
 For more information on how to integrate the _PhotoPay_ SDK into your web app read the instructions below. Make sure you read the latest [changelog](CHANGELOG.md) for most recent changes and improvements.
 
-Check out the [examples directory](examples) to see how to integrate the _PhotoPay_ SDK in different environments.
+Check out the [official demo app](https://demo.microblink.com/in-browser-sdk/photopay/index.html) or the live example at [Codepen](https://codepen.io/microblink/pen/ZEQNNZg).
+
+Finally, check out the [examples directory](examples) to see how to integrate the _PhotoPay_ SDK in different environments.
 
 _PhotoPay_ In-browser SDK is meant to be used natively in a web browser. It will not work correctly within a iOS/Android WebView or NodeJS backend service.
 
@@ -18,8 +20,7 @@ _PhotoPay_ In-browser SDK is meant to be used natively in a web browser. It will
     * [Performing your first scan](#firstScan)
     * [Recognizing still images](#stillImagesRecognition)
     * [Configuration of SDK](#sdkConfiguration)
-    * [Optimal deployment of your web app](#deploymentConsiderations)
-* [The `Recognizer` concept, `RecognizerRunner` and `VideoRecognizer`](#availableRecognizers)
+    * [Deployment guidelines](#deploymentGuidelines)
     * [The `Recognizer` concept](#recognizerConcept)
     * [`RecognizerRunner`](#recognizerRunner)
     * [Performing recognition of video streams using `VideoRecognizer`](#videoRecognizer)
@@ -296,7 +297,21 @@ PhotoPaySDK.loadWasmModule( loadSettings ).then( ... );
 
 There are some additonal development options which can be seen in the configuration class [WasmLoadSettings](src/MicroblinkSDK/WasmLoadSettings.ts).
 
-## <a name="deploymentConsiderations"></a> Optimal deployment of your web app
+## <a name="deploymentGuidelines"></a> Deployment guidelines
+
+This section contains information on how to deploy a web app which uses _PhotoPay_ In-browser SDK.
+
+### HTTPS
+
+Make sure to serve the web app on HTTPS protocol.
+
+Otherwise, web camera and loading of remote scripts will be blocked by web browser due to security policies.
+
+### Deployment of WASM files
+
+_Files: resources/PhotoPayWasmSDK.{data,js,wasm}_
+
+#### Server Configuration
 
 When browser loads the `.wasm` file it needs to compile it to the native code. This is unlike JavaScript code, which is interpreted and compiled to native code only if needed ([JIT, a.k.a. Just-in-time compilation](https://en.wikipedia.org/wiki/Just-in-time_compilation)). Therefore, before _PhotoPay_ is loaded, the browser must download and compile the provided `.wasm` file.
 
@@ -308,17 +323,83 @@ If your server supports serving compressed files, you should utilize that to min
 
 For more information about configuring your web server for using compression and for optimal delivery of your web app that uses _PhotoPay_ SDK, you should also check the [official Emscripten documentation](https://emscripten.org/docs/compiling/Deploying-Pages.html#optimizing-download-sizes).
 
-### Using HTTPS
+#### Location of WASM and related support files
 
-Make sure to serve the web app on HTTPS protocol. Modern browsers will block any requests towards WebWorkers if they're not at the same origin and if they're not available on HTTPS protocol.
+It's possible to host WASM and related support files on a location different than the one where web app is located.
 
-# <a name="availableRecognizers"></a> The `Recognizer` concept, `RecognizerRunner` and `VideoRecognizer`
+For example, it's possible to host WASM and related support files on `https://cdn.example.com`, while the web app is hosted on `https://example.com`.
 
-This section will first describe [what is a `Recognizer`](#recognizerConcept) and how it should be used to perform recognition of the images, videos and camera stream.
+In that case it's important to set [CORS headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) in response from `https://cdn.example.com`. i.e. set header `Access-Control-Allow-Origin` with proper value.
 
-Next, we will describe what is a [`RecognizerRunner`](#recognizerRunner) and how it can be used to tweak the recognition procedure.
+If WASM and related support files are not placed in the same folder with the web app, don't forget to configure instance of `WasmSDKLoadSettings`:
 
-Finally, a [`VideoRecognizer`](#videoRecognizer) will be described and how it builds on top of `RecognizerRunner` in order to provide support for recognizing a video or a camera stream.
+```typescript
+...
+const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( licenseKey );
+
+loadSettings.engineLocation = "https://cdn.example.com/wasm";
+...
+```
+
+### Deployment of Web Worker
+
+_File: resources/PhotoPayWasmSDK.worker.min.js_
+
+Due to browser security policies, web worker must be placed on the same origin as the web app.
+
+For example, it's not possible to host web worker on `https://cdn.example.com`, while web app is hosted on the `https://example.com`.
+
+To provide some level of flexibility, we've exposed configuration option which can be used to define the location of the web worker on the same origin.
+
+For example, it's possible to serve the web app at `https://example.com`, while web worker file can be placed in the `resources` subdirectory:
+
+```typescript
+...
+const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( licenseKey );
+
+loadSettings.workerLocation = "/resources";
+...
+```
+
+### Setting up multiple licenses
+
+Since license key of _PhotoPay_ SDK is tied to the domain name, it's required to initialize the SDK with different license keys based on the location of the web app.
+
+A common scenario is to have different license keys for development on the local machine, staging environment and production environment.
+
+There are two most common approaches regarding setup of license key:
+
+1. Multiple apps: build different versions of web app for different environments
+2. Single app: build single version of web app which has logic to determine which license key to use
+
+#### Multiple apps
+
+Common approach when working with modern frameworks/libraries.
+
+* [Using environment variables in React](https://medium.com/@trekinbami/using-environment-variables-in-react-6b0a99d83cf5#:~:text=In%20short%3A%20environment%20variables,re%20going%20to%20need%20webpack.)
+* [Building and serving Angular apps](https://angular.io/guide/build)
+* [Vue.js: Modes and Environment Variables](https://cli.vuejs.org/guide/mode-and-env.html#environment-variables)
+
+#### Single app
+
+Simple approach, where handling of license key is done inside the web app.
+
+Here is one possible solution:
+
+```typescript
+let licenseKey = "..."; // Place your development license key here
+
+if ( window.location.hostname === "staging.example.com" ) // Place your staging domain here
+{
+    licenseKey = "..."; // Place your staging license key here
+}
+
+if ( window.location.hostname === "example.com" ) // Place your production domain here
+{
+    licenseKey = "..."; // Place your production license key here 
+}
+...
+```
 
 ## <a name="recognizerConcept"></a> The `Recognizer` concept
 

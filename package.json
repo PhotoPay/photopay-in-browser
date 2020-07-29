@@ -3,9 +3,12 @@
     "version": "7.7.0",
     "description": "A simple payment barcode scanning library for WebAssembly-enabled browsers.",
     "homepage": "https://github.com/PhotoPay/photopay-in-browser",
-    "repository": "github:PhotoPay:photopay-in-browser",
+    "repository": "github:PhotoPay/photopay-in-browser",
     "bugs": "https://github.com/PhotoPay/photopay-in-browser/issues",
     "keywords": [],
+    "engines": {
+        "node": ">=12.0.0"
+    },
     "main": "lib/photopay-sdk.js",
     "module": "es/photopay-sdk.js",
     "unpkg": "dist/photopay-sdk.js",
