@@ -1,5 +1,9 @@
 # Release notes
 
+## 7.7.3
+
+* Fixed NPM package to include UI component.
+
 ## 7.7.2
 
 ### UI component
