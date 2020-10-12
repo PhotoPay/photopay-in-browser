@@ -5,7 +5,7 @@
  * - Scan PDF417 2D barcode of Croatian payment slip
  * - Provide visual feedback to the end-user during the scan
  */
-import * as PhotoPaySDK from "https://unpkg.com/@microblink/photopay-in-browser-sdk/es/photopay-sdk.js"
+import * as PhotoPaySDK from "./../../es/photopay-sdk.js";
 
 // General UI helpers
 const initialMessageEl = document.getElementById( "msg" );
@@ -30,7 +30,7 @@ function main()
     }
 
     // 1. It's possible to obtain a free trial license key on microblink.com
-    const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPig/w35CpHnVLW8/ZATHY523OJP5PijzR764W7JpSxOaXvkbcsUvA9QO+ziulLWjrUHMvh8o6771j3Wmb7G/0vrlDlql6u/V+FhOc0xnH64qqjpW8/6IUaKHaLtOr4zb4kqTxFBbJ5ejJImEB7HDoAWBr0qc0Bsdf387JFctEVbQhODTENfLrqBS6GCiGtFdzXwyEwjlrKzEtCtMlMMDHGnSja+wwhWF6n7CbVwz2Nlz1d4Tz8WU3upeGt8k5Jp4H9Jr4zAtavNBIT2jIw==";
+    const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPig/w35CpHnVqmAezZ0pfZ9lun7eOr4IMW/8gkodLyiVq5FOiQffdV3Kg0qVVibVwf7vCiQtkPDFRQ58msNOXGkEJ3azLG6vs3Fxy7pWE0T9tdCWxuS/ffDCh6vGPDUSLSmAnIfkVvLD6RwlwpYrHjxgV8r9WlYGyJ5YkC8wdMlKy8Aqgg2TBaWxDzabQlJPAfC7YM/bCAKXr72G2f2GSnNABaZ5zLNtLSl5myfy/OkgFW7MXNUNRSIkTmuc3uCIUiWMy3DOmKqJZ1TY";
 
     // 2. Create instance of SDK load settings with your license key
     const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( licenseKey );
@@ -41,13 +41,10 @@ function main()
     loadSettings.allowHelloMessage = true;
 
     // In order to provide better UX, display progress bar while loading the SDK
-    loadSettings.loadProgressCallback = progress => progressEl.value = progress;
+    loadSettings.loadProgressCallback = ( progress ) => ( progressEl.value = progress );
 
-    // Set relative or absolute location of the engine, i.e. WASM and support JS files
-    loadSettings.engineLocation = "";
-
-    // Set relative or absolute location of WebWorker file which is responsible for loading of WASM and support JS files
-    loadSettings.workerLocation = "resources";
+    // Set absolute location of the engine, i.e. WASM and support JS files
+    loadSettings.engineLocation = window.location.origin + "/resources/";
 
     // 3. Load SDK
     PhotoPaySDK.loadWasmModule( loadSettings ).then
@@ -56,7 +53,7 @@ function main()
         {
             document.getElementById( "screen-initial" )?.classList.add( "hidden" );
             document.getElementById( "screen-start" )?.classList.remove( "hidden" );
-            document.getElementById( "start-scan" )?.addEventListener( "click", ev =>
+            document.getElementById( "start-scan" )?.addEventListener( "click", ( ev ) =>
             {
                 ev.preventDefault();
                 startScan( sdk );

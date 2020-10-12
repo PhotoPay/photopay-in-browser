@@ -6,9 +6,12 @@ _PhotoPay_ In-browser SDK enables you to perform scans of various payment barcod
 
 For more information on how to integrate the _PhotoPay_ SDK into your web app read the instructions below. Make sure you read the latest [changelog](CHANGELOG.md) for most recent changes and improvements.
 
-Check out the [official demo app](https://demo.microblink.com/in-browser-sdk/photopay/index.html) or the live example at [Codepen](https://codepen.io/microblink/pen/ZEQNNZg).
+Check out the [official demo app](https://demo.microblink.com/in-browser-sdk/photopay/index.html) or live examples to see the _BlinkID_ SDK in action:
 
-Finally, check out the [examples directory](examples) to see how to integrate the _PhotoPay_ SDK in different environments.
+1. Example with UI component at [Codepen](https://codepen.io/microblink/pen/dyMKdxQ)
+2. Example without UI at [Codepen](https://codepen.io/microblink/pen/ZEQNNZg)
+
+Finally, check out the [examples directory](examples) to see how to integrate the _PhotoPay_ SDK in different environments. Or check out the [ui/demo](ui/demo) directory with example usage of UI component.
 
 _PhotoPay_ In-browser SDK is meant to be used natively in a web browser. It will not work correctly within a iOS/Android WebView or NodeJS backend service.
 
@@ -42,6 +45,7 @@ _PhotoPay_ In-browser SDK is meant to be used natively in a web browser. It will
         * [Slovakia](#photopay_recognizers_slovakia)
         * [Slovenia](#photopay_recognizers_slovenia)
         * [Switzerland](#photopay_recognizers_switzerland)
+* [UI component](#uiComponent)
 * [Troubleshooting](#troubleshoot)
     * [Integration problems](#integrationProblems)
     * [SDK problems](#sdkProblems)
@@ -106,11 +110,21 @@ import * as PhotoPaySDK from "./es/photopay-sdk.js";
 
 ### WASM Resources
 
-After adding the _PhotoPay_ SDK to your project, make sure to include all files from its `resources` folder in your distribution. Those files contain compiled WebAssembly module, support JS code and WebWorker.
+After adding the _PhotoPay_ SDK to your project, make sure to include all files from its `resources` folder in your distribution. Those files contain compiled WebAssembly module and support JS code.
 
 Do not add those files to the main app bundle, but rather place them on a publicly available location so SDK can load them at the appropriate time. For example, place the resources in `my-angular-app/src/assets/` folder if using `ng new`, or place the resources in `my-react-app/public/` folder if using `create-react-app`.
 
 For more information on how to setup aforementioned resources, check out the [Configuration of SDK](#sdkConfiguration) section.
+
+### Versions and backward compatibility
+
+Even though the API is not going to change between minor versions, structure of results for various recognizers can change between minor versions.
+
+This is due to improvements that are made on recognizers with every minor release.
+
+It's a good practice to always lock on minor version and to check `CHANGELOG.md` before upgrading to new minor version.
+
+For example, in `package.json` you should have something like `"@microblink/photopay-in-browser-sdk": "~4.1.1"` instead of default value `"@microblink/photopay-in-browser-sdk": "^4.1.1"`.
 
 ## <a name="firstScan"></a> Performing your first scan
 
@@ -161,7 +175,7 @@ For more information on how to setup aforementioned resources, check out the [Co
 5. Obtain a reference to your HTML video element and create a `VideoRecognizer` using the element and your instance of `RecognizerRunner` which then can be used to process input video stream:
 
     ```typescript
-    const cameraFeed = <HTMLVideoElement>document.getElementById( "myCameraVideoElement" );
+    const cameraFeed = document.getElementById( "myCameraVideoElement" ) as HTMLVideoElement;
     try
     {
         const videoRecognizer = await PhotoPaySDK.VideoRecognizer.createVideoRecognizerFromCameraStream(
@@ -218,7 +232,7 @@ If you just want to perform recognition of still images and do not need live cam
 2. Make sure you have the image set to a `HTMLImageElement`. If you only have the URL of the image that needs recognizing, You can attach it to the image element with following code snippet:
 
     ```typescript
-    const imageElement = <HTMLImageElement>document.getElementById( "imageToProcess" );
+    const imageElement = document.getElementById( "imageToProcess" ) as HTMLImageElement;
     imageElement.src = URL.createObjectURL( imageURL );
     await imageElement.decode();
     ```
@@ -253,17 +267,16 @@ const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( "your-base64-license-k
 loadSettings.allowHelloMessage = true;
 
 /**
- * Location of WASM and related JS/data files. Useful when resource files should be loaded over CDN, or when web
- * frameworks/libraries are used which store resources in specific locations, e.g. inside "assets" folder.
- *
- * If relative path is defined, the path will be resolved relative to the location of worker file.
+ * Absolute location of WASM and related JS/data files. Useful when resource files should be loaded over CDN, or
+ * when web frameworks/libraries are used which store resources in specific locations, e.g. inside "assets" folder.
  *
  * Important: if engine is hosted on another origin, CORS must be enabled between two hosts. That is, server where
  * engine is hosted must have 'Access-Control-Allow-Origin' header for the location of the web app.
  *
- * Important: SDK, worker script and WASM resources must be from the same version of package.
+ * Important: SDK and WASM resources must be from the same version of package.
  *
- * Default value is empty string, i.e. "".
+ * Default value is empty string, i.e. "". In case of empty string, value of "window.location.origin" property is
+ * going to be used.
  */
 loadSettings.engineLocation = "";
 
@@ -278,19 +291,6 @@ loadSettings.engineLocation = "";
  * loadSettings.loadProgressCallback = (percentage: number) => console.log(`${ percentage }% loaded!`);
  */
 loadSettings.loadProgressCallback = null;
-
-/**
- * Location of Web Worker script file. Useful when web frameworks/libraries are used which store
- * resources in specific locations, e.g. inside "assets" folder.
- *
- * Important: worker must be served via HTTPS and must be on the same origin as the initiator.
- * See https://github.com/w3c/ServiceWorker/issues/940 (same applies for Web Workers).
- *
- * Important: SDK, worker script and WASM resources must be from the same version of package.
- *
- * Default value is empty string, i.e. "". Valid only if "useWebWorker" is set to "true".
- */
-loadSettings.workerLocation = "";
 
 // After load settings are configured, proceed with the loading
 PhotoPaySDK.loadWasmModule( loadSettings ).then( ... );
@@ -332,33 +332,13 @@ For example, it's possible to host WASM and related support files on `https://cd
 
 In that case it's important to set [CORS headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) in response from `https://cdn.example.com`. i.e. set header `Access-Control-Allow-Origin` with proper value.
 
-If WASM and related support files are not placed in the same folder with the web app, don't forget to configure instance of `WasmSDKLoadSettings`:
+If WASM engine is not placed in the same folder as web app, don't forget to configure instance of `WasmSDKLoadSettings` with proper location:
 
 ```typescript
 ...
 const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( licenseKey );
 
 loadSettings.engineLocation = "https://cdn.example.com/wasm";
-...
-```
-
-### Deployment of Web Worker
-
-_File: resources/PhotoPayWasmSDK.worker.min.js_
-
-Due to browser security policies, web worker must be placed on the same origin as the web app.
-
-For example, it's not possible to host web worker on `https://cdn.example.com`, while web app is hosted on the `https://example.com`.
-
-To provide some level of flexibility, we've exposed configuration option which can be used to define the location of the web worker on the same origin.
-
-For example, it's possible to serve the web app at `https://example.com`, while web worker file can be placed in the `resources` subdirectory:
-
-```typescript
-...
-const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( licenseKey );
-
-loadSettings.workerLocation = "/resources";
 ...
 ```
 
@@ -397,7 +377,7 @@ if ( window.location.hostname === "staging.example.com" ) // Place your staging 
 
 if ( window.location.hostname === "example.com" ) // Place your production domain here
 {
-    licenseKey = "..."; // Place your production license key here 
+    licenseKey = "..."; // Place your production license key here
 }
 ...
 ```
@@ -418,7 +398,7 @@ Every `Recognizer` is a stateful object that can be in two possible states: _idl
 
 While in _idle state_, you are allowed to call method `updateSettings` which will update its properties according to given settings object. At any time, you can call its `currentSettings` method to obtain its currently applied settings object.
 
-After you create a `RecognizerRunner` with array containing your recognizer, the state of the `Recognizer` will change to _working state_, in which `Recognizer` object will be used for processing. While being in _working state_, it is not possible to call method `updateSettings` (calling it will crash your web app). If you need to change configuration of your recognizer while its being used, you need to call its `currentSettings` method to obtain its current configuration, update it as you need it, create a new `Recognizer` of the same type, call `updateSettings` on it with your modified configuration and finally replace the original `Recognizer` within the `RecognizerRunner` by calling its `reconfigureRecognizers` method. 
+After you create a `RecognizerRunner` with array containing your recognizer, the state of the `Recognizer` will change to _working state_, in which `Recognizer` object will be used for processing. While being in _working state_, it is not possible to call method `updateSettings` (calling it will crash your web app). If you need to change configuration of your recognizer while its being used, you need to call its `currentSettings` method to obtain its current configuration, update it as you need it, create a new `Recognizer` of the same type, call `updateSettings` on it with your modified configuration and finally replace the original `Recognizer` within the `RecognizerRunner` by calling its `reconfigureRecognizers` method.
 
 When written as a pseudocode, this would look like:
 
@@ -547,7 +527,6 @@ Similarly, if you, for example, remove the `onQuadDetection` from `MetadataCallb
 # <a name="recognizerList"></a> List of available recognizers
 
 This section will give a list of all `Recognizer` objects that are available within _PhotoPay_ SDK, their purpose and recommendations how they should be used to get best performance and user experience.
-
 ## <a name="successFrameGrabber"></a> Success Frame Grabber Recognizer
 
 The [`SuccessFrameGrabberRecognizer`](src/Recognizers/SuccessFrameGrabberRecognizer.ts) is a special `Recognizer` that wraps some other `Recognizer` and impersonates it while processing the image. However, when the `Recognizer` being impersonated changes its `Result` into `Valid` state, the `SuccessFrameGrabberRecognizer` captures the image and saves it into its own `Result` object.
@@ -639,6 +618,178 @@ The [`SloveniaQrCodePaymentRecognizer`](src/Recognizers/PhotoPay/Slovenia/Sloven
 #### <a name="switzerland_qr"></a> Swiss payment QR code recognizer
 
 The [`SwitzerlandQrCodePaymentRecognizer`](src/Recognizers/PhotoPay/Switzerland/SwitzerlandQrCodePaymentRecognizer.ts) is used for scanning payment information from payment QR codes used in Switzerland.
+# <a name="uiComponent"></a> UI component
+
+_PhotoPay_ In-browser UI component acts as an UI layer built on top of core SDK. UI component is customizable HTML element which provides UI for scanning of various identity documents from images and from camera feed.
+
+One of the main goals of UI component is to simplify integration of _PhotoPay_ in web apps for various use cases.
+
+## <a name="ui-installation"></a> Installation
+
+To use the UI component, JS file with custom element must be loaded and WASM engine must be available.
+
+### Installation via CDN
+
+```html
+<!-- Load custom element via `<script>` tag with fallback for older browsers -->
+<script type="module" src="https://unpkg.com/@microblink/photopay-in-browser-sdk/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
+<script nomodule src="https://unpkg.com/@microblink/photopay-in-browser-sdk/ui/dist/photopay-in-browser.js"></script>
+
+<!-- Custom element is now available and location of WASM engine must be provided -->
+<!-- IMPORTANT: location of WASM engine must be an absolute path -->
+<photopay-in-browser license-key="..." engine-location="https://unpkg.com/@microblink/photopay-in-browser-sdk/resources/"></photopay-in-browser>
+```
+
+### Installation via NPM
+
+```sh
+# Install latest version of UI component via NPM or Yarn
+npm install @microblink/photopay-in-browser-sdk # OR yarn add @microblink/photopay-in-browser-sdk
+
+# Copy JS file to folder where other JS assets are located
+cp -r node_modules/@microblink/photopay-in-browser-sdk/ui/dist/* src/public/js/
+
+# Copy WASM resources from SDK to folder where other static assets are located
+cp -r node_modules/@microblink/photopay-in-browser-sdk/resources/* src/public/assets/
+```
+
+```html
+<!-- Load custom element via `<script>` tag with fallback for older browsers -->
+<script type="module" src="public/js/photopay-in-browser/photopay-in-browser.esm.js"></script>
+<script nomodule src="public/js/photopay-in-browser.js"></script>
+
+<!-- Custom element is now available and location of WASM engine must be provided -->
+<!-- IMPORTANT: location of WASM engine must be an absolute path
+<photopay-in-browser license-key="..." engine-location="http://localhost/public/assets/"></photopay-in-browser>
+```
+
+### WASM resources
+
+After adding the _PhotoPay_ UI component to your project, make sure to include all files from _PhotoPay_ SDK package and its `resources` folder in your distribution. Those files contain compiled WebAssembly module and support JS code.
+
+Do not add those files to the main app bundle, but rather place them on a publicly available location so SDK can load them at the appropriate time. For example, place the resources in `my-angular-app/src/assets/` folder if using `ng new`, or place the resources in `my-react-app/public/` folder if using `create-react-app`.
+
+## <a name="ui-usage"></a> Usage
+
+_PhotoPay_ UI component acts as any other HTML element. It has custom attributes, properties and events.
+
+Required parameters are license key, engine location and list of active recognizers.
+
+### Minimal example
+
+```html
+<photopay-in-browser
+    engine-location="http://localhost/resources"
+    license-key="place-your-license-key-here"
+    recoginzers="CroatiaPdf417PaymentRecognizer"
+></photopay-in-browser>
+
+<script>
+    // Register listener for successful scan event to obtain results
+    const photopay = document.querySelector('photopay-in-browser');
+
+    photopay.addEventListener('scanSuccess', ev => {
+        // Since UI component uses custom events, data is placed in `detail` property
+        console.log('Results', ev.detail);
+    });
+</script>
+```
+
+### Advanced example
+
+```html
+<!-- UI component can be customized with JS attributes or HTML properties -->
+<photopay-in-browser></photopay-in-browser>
+
+<script>
+    const photopay = document.querySelector('photopay-in-browser');
+
+    /**
+     * Mandatory properties
+     */
+
+    // Absolute path to location of WASM resource files
+    photopay.engineLocation = 'http://localhost/resources';
+
+    // License key
+    photopay.licenseKey = 'place-your-license-key-here';
+
+    // Recognizers - logic which should be used to extract data
+    //             - see section about recognizer concept for more information
+    photopay.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+
+    /**
+     * Optional properties
+     *
+     * See ui/docs/components/photopay-in-browser/readme.md for more information.
+     */
+    photopay.allowHelloMessage     = true;
+    photopay.recognizerOptions     = undefined;
+    photopay.includeSuccessFrame   = false;
+    photopay.enableDrag            = true;
+    photopay.hideFeedback          = false;
+    photopay.hideLoadingAndErrorUi = false;
+    photopay.scanFromCamera        = true;
+    photopay.scanFromImage         = true;
+    photopay.translations          = undefined;
+    photopay.iconCamera            = undefined;
+    photopay.iconGallery           = undefined;
+    photopay.iconInvalidFormat     = undefined;
+    photopay.iconSpinner           = undefined;
+
+    /**
+     * Events
+     */
+
+    // Event emitted when UI component cannot initialize
+    photopay.addEventListener('fatalError', ev => {
+        console.log('fatalError', ev.detail);
+    });
+
+    // Event emitted when UI component is ready to use
+    photopay.addEventListener('ready', ev => {
+        console.log('ready', ev.detail);
+    });
+
+    // Event emitted in case of error during scan action
+    photopay.addEventListener('scanError', ev => {
+        console.log('scanError', ev.detail);
+    });
+
+    // Event emitted when scan is successful
+    photopay.addEventListener('scanSuccess', ev => {
+        console.log('scanSuccess', ev.detail);
+    });
+
+    // Event emitted when UI component wants to display a feedback message to the user
+    photopay.addEventListener('feedback', ev => {
+        console.log('feedback', ev.detail);
+    });
+</script>
+
+<!-- UI customization -->
+<style>
+    /**
+     * UI component relies on CSS variables which can be used to override default styles.
+     *
+     * All CSS variables are defined in `ui/src/components/shared/styles/_globals.scss` file.
+     */
+    photopay-in-browser {
+        --mb-font-family:           inherit;
+        --mb-component-background:  #FFF;
+        --mb-component-font-color:  #000;
+        --mb-component-font-size:   14px;
+    }
+</style>
+```
+
+### Examples and API documentation
+
+Demo app with multiple UI components alongside with source code can be found in the [ui/demo.html](ui/demo.html) file.
+
+Example apps are located in the [examples](examples) directory, where minimal JavaScript example is located in the [examples/ui](examples/ui) directory, while minimal TypeScript example is located in the [examples/ui-ts](examples/ui-ts) directory.
+
+Complete API documentation of UI components is located in the [docs directory](ui/docs).
 # <a name="troubleshoot"></a> Troubleshooting
 
 ## <a name="integrationProblems"></a> Integration problems

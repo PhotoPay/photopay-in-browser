@@ -1,8 +1,8 @@
 export * from "./MicroblinkSDK/MicroblinkSDK";
 
 // export all recognizers
+export * from "./Recognizers/SuccessFrameGrabberRecognizer";
 export * from "./Recognizers/BlinkBarcode/BarcodeRecognizer";
-
 export * from "./Recognizers/PhotoPay/Austria/AustriaQrCodePaymentRecognizer";
 export * from "./Recognizers/PhotoPay/Croatia/CroatiaPdf417PaymentRecognizer";
 export * from "./Recognizers/PhotoPay/Croatia/CroatiaQrCodePaymentRecognizer";

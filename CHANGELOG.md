@@ -1,5 +1,24 @@
 # Release notes
 
+## 7.7.2
+
+### UI component
+
+* We added a UI component in the format of a custom web element to use BlinkID on your web in an effortless way.
+* Check out the [README file](README.md) for instructions on how to use UI component, or check the [ui directory](/ui) for complete source code.
+
+### Minor API changes
+
+* We removed `workerLocation` property from `WasmSDKLoadSettings`.
+    * Web worker is now inlined into the source code, which simplifies the SDK deployment and usage.
+    * Property `engineLocation` in `WasmSDKLoadSettings` **must** be an absolute path.
+    * Removed `useWebWorker` property from `WasmSDKLoadSettings`, since web worker is now always used as it provides much better user experience
+      and does not block the UI browser thread.
+
+### Fixes
+
+* We fixed the initialization promise chain so that you can handle all initialization errors with a single error handler.
+
 ## 7.7.1
 
 - Removed `alert()` from [VideoRecognizer](src/MicroblinkSDK/VideoRecognizer.ts) and added `allowManualVideoPlayout` to constructor of `VideoRecognizer` class
