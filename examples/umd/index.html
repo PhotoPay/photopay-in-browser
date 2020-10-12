@@ -23,7 +23,7 @@
         </div>
     </body>
     
-    <script type="text/javascript" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.2/dist/photopay-sdk.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/dist/photopay-sdk.js"></script>
     <script type="text/javascript">
     /**
      * PhotoPay In-browser SDK demo app which demonstrates how to:
@@ -69,7 +69,7 @@
         loadSettings.loadProgressCallback = progress => ( progressEl.value = progress );
 
         // Set absolute location of the engine, i.e. WASM and support JS files
-        loadSettings.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.2/resources/";
+        loadSettings.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/resources/";
 
         // 3. Load SDK
         PhotoPaySDK.loadWasmModule( loadSettings ).then
