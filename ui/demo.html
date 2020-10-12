@@ -132,8 +132,8 @@
         margin-bottom: 1.5rem;
       }
     </style>
-    <script type="module" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/dist/ui/photopay-in-browser/photopay-in-browser.esm.js"></script>
-    <script nomodule src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/dist/ui/photopay-in-browser.js"></script>
+    <script type="module" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
+    <script nomodule src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/ui/dist/photopay-in-browser.js"></script>
     <script type="text/javascript">
       window.getSafePathname = p => p[ p.length - 1 ] === '/' ? p : p.split( '/' ).slice( 0, -1 ).join( '/' ) + '/';
       /**
@@ -206,7 +206,7 @@
         photopay.licenseKey = window.licenseKey;
         photopay.recognizers = ['CroatiaPdf417PaymentRecognizer'];
         window.setTimeout(() => {
-          photopay.translations = { 
+          photopay.translations = {
             'action-message': 'Alternative CTA'
           };
         }, 3000);
@@ -242,7 +242,7 @@
         photopay.recognizers = ['CroatiaPdf417PaymentRecognizer'];
 
         window.setTimeout(() => {
-          photopay.translations = { 
+          photopay.translations = {
             'action-message': 'Alternative CTA'
           };
         }, 3000);
@@ -388,7 +388,7 @@
 
         customizatorForm.addEventListener('submit', ev => {
           ev.preventDefault();
-          
+
           document.querySelector(
             '#example-customization .box'
           ).style.background = document.getElementById('customization-background').value;
