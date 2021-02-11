@@ -29,7 +29,7 @@ function main()
     }
 
     // 1. It's possible to obtain a free trial license key on microblink.com
-    const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPig/w35CpHnVqmAezZ0pfZ9lun7eOr4IMW/8gkodLyiVq5FOiQffdV3Kg0qVVibVwf7vCiQtkPDFRQ58msNOXGkEJ3azLG6vs3Fxy7pWE0T9tdCWxuS/ffDCh6vGPDUSLSmAnIfkVvLD6RwlwpYrHjxgV8r9WlYGyJ5YkC8wdMlKy8Aqgg2TBaWxDzabQlJPAfC7YM/bCAKXr72G2f2GSnNABaZ5zLNtLSl5myfy/OkgFW7MXNUNRSIkTmuc3uCIUiWMy3DOmKqJZ1TY";
+    const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHlVLi84YJhfzkKNDWt5k6TOIq/BqQY4bts33tGdQc7RawrRGyvbnbj5DEV92rrMkoGMUk3QCySYI9IPMLsIG1aPiOLf1Dhq9FZbGgJvTq6f1O/4pQzxtWn5rN+fs9TqjLz+ei2k0Bv12JREFNsBroMSZUuIDW7uU2bAnW4qW2cedBUaDI9KuhBAtS1B/78M3zb7Fm3dhvMvXj2Mlhl+iwFDwqAhHb5f8vxRICbnqjrb9GO34z4jgJFVQ/mDFZzgLASEJlUO01vfBs18GWt78ups4pIgiIpJph2DhMi76GMxoqQKJfoEs6Wl+VwmIftwWJQbMg==";
 
     // 2. Create instance of SDK load settings with your license key
     const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( licenseKey );
