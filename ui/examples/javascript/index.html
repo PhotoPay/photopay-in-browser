@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+        <title>Example: PhotoPay UI</title>
+
+        <script type="module" src="/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
+        <style type="text/css">
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+
+                width: 100%;
+                height: 100%;
+            }
+
+            html {
+                font-family: "Avenir Next", sans-serif;
+            }
+
+            body {
+                background-color: #fff;
+                box-sizing: border-box;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                padding: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <photopay-in-browser
+            license-key="sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHlVKjc9YGS1TbhKMOp/628Nz+3wucEKOKiY/6REBB0awpfPXXng8x6oFT8mEe+eFZwM6UTZKMO58PYWB2BUoq3KuLZWA0iIrN5l0EOTf4y0aTFs1KXROvrx2TbPyeNjYtPqtuMZq7Mo6L0GGWp5zehmxpUnuWBsW8/tR/8NLpfFQHucZnA+nnsS3Oj/qzbaf96oTjl1Ov4T4WVRbNK4yjzUre+L+NleOrZygXTQnqPLtPnhKmoHjJ9dtyTRp1C89NxNHUqVeacwp0Q8v+plPxr+fS8zSCMVeEWgumsmmLhFiaFLxHQ14VPYB+ycRpMi6FAZVPNXPbXtfjWi0g=="
+            recognizers="CroatiaPdf417PaymentRecognizer"
+        ></photopay-in-browser>
+
+        <script type="text/javascript">
+            function run()
+            {
+                // Important: if attributes or properties are changed, whole component is rerendered
+                const photopay = document.querySelector( "photopay-in-browser" );
+
+                photopay.engineLocation = window.location.origin + "/resources/";
+
+                photopay.addEventListener
+                (
+                    "fatalError",
+                    ev => console.log( "fatalError", ev.detail )
+                );
+
+                photopay.addEventListener
+                (
+                    "ready",
+                    ev => console.log( "ready", ev.detail )
+                );
+
+                photopay.addEventListener
+                (
+                    "scanError",
+                    ev => console.log( "scanError", ev.detail )
+                );
+
+                photopay.addEventListener
+                (
+                    "scanSuccess",
+                    ev => console.log( "scanSuccess", ev.detail )
+                );
+
+                photopay.addEventListener
+                (
+                    "feedback",
+                    ev => console.log( "feedback", ev.detail )
+                );
+            }
+
+            window.addEventListener( "DOMContentLoaded", ev => run() );
+        </script>
+    </body>
+</html>

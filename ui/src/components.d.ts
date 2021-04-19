@@ -6,8 +6,23 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TranslationService } from "./utils/translation.service";
-import { CameraExperience, CameraExperienceState, EventFatalError, EventReady, EventScanError, EventScanSuccess, FeedbackMessage, ModalContent } from "./utils/data-structures";
+import { CameraExperience, CameraExperienceState, EventFatalError, EventReady, EventScanError, EventScanSuccess, FeedbackMessage } from "./utils/data-structures";
+import { SdkService } from "./utils/sdk.service";
 export namespace Components {
+    interface MbApiProcessStatus {
+        /**
+          * State value of API processing received from parent element ('loading' or 'success').
+         */
+        "state": 'ERROR' | 'LOADING' | 'NONE' | 'SUCCESS';
+        /**
+          * Instance of TranslationService passed from parent component.
+         */
+        "translationService": TranslationService;
+        /**
+          * Element visibility, default is 'false'.
+         */
+        "visible": boolean;
+    }
     interface MbButton {
         /**
           * Set to 'true' if button should be disabled, and if click events should not be triggered.
@@ -30,6 +45,10 @@ export namespace Components {
          */
         "imageSrcDefault": string;
         /**
+          * Set to string which should be displayed below the icon.  If omitted, nothing will show.
+         */
+        "label": string;
+        /**
           * Set to 'true' if default event should be prevented.
          */
         "preventDefault": boolean;
@@ -44,13 +63,33 @@ export namespace Components {
     }
     interface MbCameraExperience {
         /**
+          * Api state passed from root component.
+         */
+        "apiState": string;
+        /**
+          * Camera horizontal state passed from root component.  Horizontal camera image can be mirrored
+         */
+        "cameraFlipped": boolean;
+        /**
+          * Method is exposed outside which allow us to control Camera Flip state from parent component.
+         */
+        "setCameraFlipState": (isFlipped: boolean) => Promise<void>;
+        /**
           * Set camera scanning state.
          */
         "setState": (state: CameraExperienceState, isBackSide?: boolean, force?: boolean) => Promise<void>;
         /**
+          * Show camera feedback message on camera for Barcode scanning
+         */
+        "showCameraFeedbackBarcodeMessage": boolean;
+        /**
           * Unless specifically granted by your license key, you are not allowed to modify or remove the Microblink logo displayed on the bottom of the camera overlay.
          */
         "showOverlay": boolean;
+        /**
+          * Show scanning line on camera
+         */
+        "showScanningLine": boolean;
         /**
           * Instance of TranslationService passed from root component.
          */
@@ -66,6 +105,10 @@ export namespace Components {
          */
         "allowHelloMessage": boolean;
         /**
+          * Camera device ID passed from root component.
+         */
+        "cameraId": string | null;
+        /**
           * See description in public component.
          */
         "enableDrag": boolean;
@@ -77,11 +120,17 @@ export namespace Components {
           * See description in public component.
          */
         "hideLoadingAndErrorUi": boolean;
+        /**
+          * See description in public component.
+         */
         "iconCameraActive": string;
         /**
           * See description in public component.
          */
         "iconCameraDefault": string;
+        /**
+          * See description in public component.
+         */
         "iconGalleryActive": string;
         /**
           * See description in public component.
@@ -94,7 +143,11 @@ export namespace Components {
         /**
           * See description in public component.
          */
-        "iconSpinner": string;
+        "iconSpinnerFromGalleryExperience": string;
+        /**
+          * See description in public component.
+         */
+        "iconSpinnerScreenLoading": string;
         /**
           * See description in public component.
          */
@@ -106,7 +159,7 @@ export namespace Components {
         /**
           * See description in public component.
          */
-        "recognizerOptions": Array<string>;
+        "recognizerOptions": { [key: string]: any };
         /**
           * See description in public component.
          */
@@ -124,9 +177,41 @@ export namespace Components {
          */
         "scanFromImage": boolean;
         /**
+          * Instance of SdkService passed from root component.
+         */
+        "sdkService": SdkService;
+        /**
+          * Method is exposed outside which allow us to control UI state from parent component.  In case of state `ERROR` and if `showModalWindows` is set to `true`, modal window with error message will be displayed.
+         */
+        "setUiState": (state: 'ERROR' | 'LOADING' | 'NONE' | 'SUCCESS') => Promise<void>;
+        /**
+          * See description in public component.
+         */
+        "showActionLabels": boolean;
+        /**
+          * See description in public component.
+         */
+        "showCameraFeedbackBarcodeMessage": boolean;
+        /**
+          * See description in public component.
+         */
+        "showModalWindows": boolean;
+        /**
+          * See description in public component.
+         */
+        "showScanningLine": boolean;
+        /**
+          * See description in public component.
+         */
+        "thoroughScanFromImage": boolean;
+        /**
           * Instance of TranslationService passed from root component.
          */
         "translationService": TranslationService;
+        /**
+          * See description in public component.
+         */
+        "wasmType": string | null;
     }
     interface MbContainer {
     }
@@ -142,9 +227,21 @@ export namespace Components {
     }
     interface MbModal {
         /**
-          * Passed content from parent component
+          * Passed body content from parent component
          */
-        "content": ModalContent;
+        "content": string;
+        /**
+          * Center content inside modal
+         */
+        "contentCentered": boolean;
+        /**
+          * Passed title content from parent component
+         */
+        "modalTitle": string;
+        /**
+          * Show modal content
+         */
+        "visible": boolean;
     }
     interface MbOverlay {
         /**
@@ -177,6 +274,10 @@ export namespace Components {
           * Write a hello message to the browser console when license check is successfully performed.  Hello message will contain the name and version of the SDK, which are required information for all support tickets.  Default value is true.
          */
         "allowHelloMessage": boolean;
+        /**
+          * Camera device ID passed from root component.  Client can choose which camera to turn on if array of cameras exists.
+         */
+        "cameraId": string | null;
         /**
           * Set to 'false' if component should not enable drag and drop functionality.  Default value is 'true'.
          */
@@ -216,7 +317,11 @@ export namespace Components {
         /**
           * Provide alternative loading icon. CSS rotation is applied to this icon.  Every value that is placed here is passed as a value of `src` attribute to <img> element. This attribute can be used to provide location, base64 or any URL of alternative gallery icon.  Image is scaled to 24x24 pixels.
          */
-        "iconSpinner": string;
+        "iconSpinnerFromGalleryExperience": string;
+        /**
+          * Provide alternative loading icon. CSS rotation is applied to this icon.  Every value that is placed here is passed as a value of `src` attribute to <img> element. This attribute can be used to provide location, base64 or any URL of alternative gallery icon.  Image is scaled to 24x24 pixels.
+         */
+        "iconSpinnerScreenLoading": string;
         /**
           * Set to 'true' if success frame should be included in final scanning results.  Default value is 'false'.
          */
@@ -226,10 +331,6 @@ export namespace Components {
          */
         "licenseKey": string;
         /**
-          * Specify additional recognizer options.  Example: @TODO
-         */
-        "rawRecognizerOptions": string;
-        /**
           * List of recognizers which should be used.  Available recognizers for PhotoPay:  - AustriaQrCodePaymentRecognizer - CroatiaPdf417PaymentRecognizer - CroatiaQrCodePaymentRecognizer - CzechiaQrCodePaymentRecognizer - GermanyQrCodePaymentRecognizer - KosovoCode128PaymentRecognizer - SepaQrCodePaymentRecognizer - SerbiaPdf417PaymentRecognizer - SerbiaQrCodePaymentRecognizer - SlovakiaCode128PaymentRecognizer - SlovakiaDataMatrixPaymentRecognizer - SlovakiaQrCodePaymentRecognizer - SloveniaQrCodePaymentRecognizer - SwitzerlandQrCodePaymentRecognizer  Recognizers can be defined by setting HTML attribute "recognizers", for example:  `<photopay-in-browser recognizers="CroatiaPdf417PaymentRecognizer,CroatiaQrCodePaymentRecognizer"></photopay-in-browser>`
          */
         "rawRecognizers": string;
@@ -238,9 +339,9 @@ export namespace Components {
          */
         "rawTranslations": string;
         /**
-          * Specify additional recognizer options.  Example: @TODO
+          * Specify recognizer options. This option can only bet set as a JavaScript property.  Pass an object to `recognizerOptions` property where each key represents a recognizer, while the value represents desired recognizer options.  ``` photopay.recognizerOptions = {    'CroatiaBaseBarcodePaymentRecognizer': {      'shouldSanitize': true    } } ```  For a full list of available recognizer options see source code of a recognizer. For example, list of available recognizer options for CroatiaBaseBarcodePaymentRecognizer can be seen in the `src/Recognizers/PhotoPay/Croatia/CroatiaBaseBarcodePaymentRecognizer.ts` file.
          */
-        "recognizerOptions": Array<string>;
+        "recognizerOptions": { [key: string]: any };
         /**
           * List of recognizers which should be used.  Available recognizers for PhotoPay:  - AustriaQrCodePaymentRecognizer - CroatiaPdf417PaymentRecognizer - CroatiaQrCodePaymentRecognizer - CzechiaQrCodePaymentRecognizer - GermanyQrCodePaymentRecognizer - KosovoCode128PaymentRecognizer - SepaQrCodePaymentRecognizer - SerbiaPdf417PaymentRecognizer - SerbiaQrCodePaymentRecognizer - SlovakiaCode128PaymentRecognizer - SlovakiaDataMatrixPaymentRecognizer - SlovakiaQrCodePaymentRecognizer - SloveniaQrCodePaymentRecognizer - SwitzerlandQrCodePaymentRecognizer  Recognizers can be defined by setting JS property "recognizers", for example:  ``` const photopay = document.querySelector('photopay-in-browser'); photopay.recognizers = ['CroatiaPdf417PaymentRecognizer', 'CroatiaQrCodePaymentRecognizer']; ```
          */
@@ -254,12 +355,46 @@ export namespace Components {
          */
         "scanFromImage": boolean;
         /**
+          * Show message alongside UI component.  Possible values for `state` are 'FEEDBACK_ERROR' | 'FEEDBACK_INFO' | 'FEEDBACK_OK'.
+         */
+        "setUiMessage": (state: 'FEEDBACK_ERROR' | 'FEEDBACK_INFO' | 'FEEDBACK_OK', message: string) => Promise<void>;
+        /**
+          * Control UI state of camera overlay.  Possible values are 'ERROR' | 'LOADING' | 'NONE' | 'SUCCESS'.  In case of state `ERROR` and if `showModalWindows` is set to `true`, modal window with error message will be displayed. Otherwise, UI will close.
+         */
+        "setUiState": (state: 'ERROR' | 'LOADING' | 'NONE' | 'SUCCESS') => Promise<void>;
+        /**
+          * Set to 'true' if text labels should be displayed below action buttons.  Default value is 'false'.
+         */
+        "showActionLabels": boolean;
+        /**
+          * Set to 'true' if for Barcode scanning camera feedback message should be displayed on camera screen.  Default value is 'false'.
+         */
+        "showCameraFeedbackBarcodeMessage": boolean;
+        /**
+          * Set to 'true' if modal window should be displayed in case of an error.  Default value is 'false'.
+         */
+        "showModalWindows": boolean;
+        /**
+          * Scan line animation option passed from root component.  Client can choose if scan line animation will be present in UI.  Default value is 'false'
+         */
+        "showScanningLine": boolean;
+        /**
           * Set custom translations for UI component. List of available translation keys can be found in `src/utils/translation.service.ts` file.
          */
         "translations": { [key: string]: string };
+        /**
+          * Defines the type of the WebAssembly build that will be loaded. If omitted, SDK will determine the best possible WebAssembly build which should be loaded based on the browser support.  Available WebAssembly builds:  - 'BASIC' - 'ADVANCED' - 'ADVANCED_WITH_THREADS'  For more information about different WebAssembly builds, check out the `src/MicroblinkSDK/WasmType.ts` file.
+         */
+        "wasmType": string;
     }
 }
 declare global {
+    interface HTMLMbApiProcessStatusElement extends Components.MbApiProcessStatus, HTMLStencilElement {
+    }
+    var HTMLMbApiProcessStatusElement: {
+        prototype: HTMLMbApiProcessStatusElement;
+        new (): HTMLMbApiProcessStatusElement;
+    };
     interface HTMLMbButtonElement extends Components.MbButton, HTMLStencilElement {
     }
     var HTMLMbButtonElement: {
@@ -321,6 +456,7 @@ declare global {
         new (): HTMLPhotopayInBrowserElement;
     };
     interface HTMLElementTagNameMap {
+        "mb-api-process-status": HTMLMbApiProcessStatusElement;
         "mb-button": HTMLMbButtonElement;
         "mb-camera-experience": HTMLMbCameraExperienceElement;
         "mb-component": HTMLMbComponentElement;
@@ -334,6 +470,28 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface MbApiProcessStatus {
+        /**
+          * Emitted when user clicks on 'x' button.
+         */
+        "onCloseFromStart"?: (event: CustomEvent<void>) => void;
+        /**
+          * Emitted when user clicks on 'Retry' button.
+         */
+        "onCloseTryAgain"?: (event: CustomEvent<void>) => void;
+        /**
+          * State value of API processing received from parent element ('loading' or 'success').
+         */
+        "state"?: 'ERROR' | 'LOADING' | 'NONE' | 'SUCCESS';
+        /**
+          * Instance of TranslationService passed from parent component.
+         */
+        "translationService"?: TranslationService;
+        /**
+          * Element visibility, default is 'false'.
+         */
+        "visible"?: boolean;
+    }
     interface MbButton {
         /**
           * Set to 'true' if button should be disabled, and if click events should not be triggered.
@@ -356,6 +514,10 @@ declare namespace LocalJSX {
          */
         "imageSrcDefault"?: string;
         /**
+          * Set to string which should be displayed below the icon.  If omitted, nothing will show.
+         */
+        "label"?: string;
+        /**
           * Event which is triggered when user clicks on button element. This event is not triggered when the button is disabled.
          */
         "onButtonClick"?: (event: CustomEvent<UIEvent>) => void;
@@ -374,13 +536,33 @@ declare namespace LocalJSX {
     }
     interface MbCameraExperience {
         /**
+          * Api state passed from root component.
+         */
+        "apiState"?: string;
+        /**
+          * Camera horizontal state passed from root component.  Horizontal camera image can be mirrored
+         */
+        "cameraFlipped"?: boolean;
+        /**
           * Emitted when user clicks on 'X' button.
          */
         "onClose"?: (event: CustomEvent<void>) => void;
         /**
+          * Emitted when user clicks on Flip button.
+         */
+        "onFlipCameraAction"?: (event: CustomEvent<void>) => void;
+        /**
+          * Show camera feedback message on camera for Barcode scanning
+         */
+        "showCameraFeedbackBarcodeMessage"?: boolean;
+        /**
           * Unless specifically granted by your license key, you are not allowed to modify or remove the Microblink logo displayed on the bottom of the camera overlay.
          */
         "showOverlay"?: boolean;
+        /**
+          * Show scanning line on camera
+         */
+        "showScanningLine"?: boolean;
         /**
           * Instance of TranslationService passed from root component.
          */
@@ -396,6 +578,10 @@ declare namespace LocalJSX {
          */
         "allowHelloMessage"?: boolean;
         /**
+          * Camera device ID passed from root component.
+         */
+        "cameraId"?: string | null;
+        /**
           * See description in public component.
          */
         "enableDrag"?: boolean;
@@ -407,11 +593,17 @@ declare namespace LocalJSX {
           * See description in public component.
          */
         "hideLoadingAndErrorUi"?: boolean;
+        /**
+          * See description in public component.
+         */
         "iconCameraActive"?: string;
         /**
           * See description in public component.
          */
         "iconCameraDefault"?: string;
+        /**
+          * See description in public component.
+         */
         "iconGalleryActive"?: string;
         /**
           * See description in public component.
@@ -424,7 +616,11 @@ declare namespace LocalJSX {
         /**
           * See description in public component.
          */
-        "iconSpinner"?: string;
+        "iconSpinnerFromGalleryExperience"?: string;
+        /**
+          * See description in public component.
+         */
+        "iconSpinnerScreenLoading"?: string;
         /**
           * See description in public component.
          */
@@ -434,6 +630,10 @@ declare namespace LocalJSX {
          */
         "licenseKey"?: string;
         /**
+          * See event 'cameraScanStarted' in public component.
+         */
+        "onCameraScanStarted"?: (event: CustomEvent<null>) => void;
+        /**
           * See event 'fatalError' in public component.
          */
         "onFatalError"?: (event: CustomEvent<EventFatalError>) => void;
@@ -441,6 +641,10 @@ declare namespace LocalJSX {
           * Event containing FeedbackMessage which can be passed to MbFeedback component.
          */
         "onFeedback"?: (event: CustomEvent<FeedbackMessage>) => void;
+        /**
+          * See event 'imageScanStarted' in public component.
+         */
+        "onImageScanStarted"?: (event: CustomEvent<null>) => void;
         /**
           * See event 'ready' in public component.
          */
@@ -456,7 +660,7 @@ declare namespace LocalJSX {
         /**
           * See description in public component.
          */
-        "recognizerOptions"?: Array<string>;
+        "recognizerOptions"?: { [key: string]: any };
         /**
           * See description in public component.
          */
@@ -474,9 +678,37 @@ declare namespace LocalJSX {
          */
         "scanFromImage"?: boolean;
         /**
+          * Instance of SdkService passed from root component.
+         */
+        "sdkService"?: SdkService;
+        /**
+          * See description in public component.
+         */
+        "showActionLabels"?: boolean;
+        /**
+          * See description in public component.
+         */
+        "showCameraFeedbackBarcodeMessage"?: boolean;
+        /**
+          * See description in public component.
+         */
+        "showModalWindows"?: boolean;
+        /**
+          * See description in public component.
+         */
+        "showScanningLine"?: boolean;
+        /**
+          * See description in public component.
+         */
+        "thoroughScanFromImage"?: boolean;
+        /**
           * Instance of TranslationService passed from root component.
          */
         "translationService"?: TranslationService;
+        /**
+          * See description in public component.
+         */
+        "wasmType"?: string | null;
     }
     interface MbContainer {
     }
@@ -488,13 +720,25 @@ declare namespace LocalJSX {
     }
     interface MbModal {
         /**
-          * Passed content from parent component
+          * Passed body content from parent component
          */
-        "content"?: ModalContent;
+        "content"?: string;
         /**
-          * Emitted when user clicks on 'Close' button.
+          * Center content inside modal
+         */
+        "contentCentered"?: boolean;
+        /**
+          * Passed title content from parent component
+         */
+        "modalTitle"?: string;
+        /**
+          * Emitted when user clicks on 'X' button.
          */
         "onClose"?: (event: CustomEvent<void>) => void;
+        /**
+          * Show modal content
+         */
+        "visible"?: boolean;
     }
     interface MbOverlay {
         /**
@@ -527,6 +771,10 @@ declare namespace LocalJSX {
           * Write a hello message to the browser console when license check is successfully performed.  Hello message will contain the name and version of the SDK, which are required information for all support tickets.  Default value is true.
          */
         "allowHelloMessage"?: boolean;
+        /**
+          * Camera device ID passed from root component.  Client can choose which camera to turn on if array of cameras exists.
+         */
+        "cameraId"?: string | null;
         /**
           * Set to 'false' if component should not enable drag and drop functionality.  Default value is 'true'.
          */
@@ -566,7 +814,11 @@ declare namespace LocalJSX {
         /**
           * Provide alternative loading icon. CSS rotation is applied to this icon.  Every value that is placed here is passed as a value of `src` attribute to <img> element. This attribute can be used to provide location, base64 or any URL of alternative gallery icon.  Image is scaled to 24x24 pixels.
          */
-        "iconSpinner"?: string;
+        "iconSpinnerFromGalleryExperience"?: string;
+        /**
+          * Provide alternative loading icon. CSS rotation is applied to this icon.  Every value that is placed here is passed as a value of `src` attribute to <img> element. This attribute can be used to provide location, base64 or any URL of alternative gallery icon.  Image is scaled to 24x24 pixels.
+         */
+        "iconSpinnerScreenLoading"?: string;
         /**
           * Set to 'true' if success frame should be included in final scanning results.  Default value is 'false'.
          */
@@ -576,6 +828,10 @@ declare namespace LocalJSX {
          */
         "licenseKey"?: string;
         /**
+          * Event which is emitted when camera scan is started, i.e. when user clicks on _scan from camera_ button.
+         */
+        "onCameraScanStarted"?: (event: CustomEvent<null>) => void;
+        /**
           * Event which is emitted during initialization of UI component.  Each event contains `code` property which has deatils about fatal errror.
          */
         "onFatalError"?: (event: CustomEvent<EventFatalError>) => void;
@@ -583,6 +839,10 @@ declare namespace LocalJSX {
           * Event which is emitted during positive or negative user feedback. If attribute/property `hideFeedback` is set to `false`, UI component will display the feedback.
          */
         "onFeedback"?: (event: CustomEvent<FeedbackMessage>) => void;
+        /**
+          * Event which is emitted when image scan is started, i.e. when user clicks on _scan from gallery button.
+         */
+        "onImageScanStarted"?: (event: CustomEvent<null>) => void;
         /**
           * Event which is emitted when UI component is successfully initialized and ready for use.
          */
@@ -596,10 +856,6 @@ declare namespace LocalJSX {
          */
         "onScanSuccess"?: (event: CustomEvent<EventScanSuccess>) => void;
         /**
-          * Specify additional recognizer options.  Example: @TODO
-         */
-        "rawRecognizerOptions"?: string;
-        /**
           * List of recognizers which should be used.  Available recognizers for PhotoPay:  - AustriaQrCodePaymentRecognizer - CroatiaPdf417PaymentRecognizer - CroatiaQrCodePaymentRecognizer - CzechiaQrCodePaymentRecognizer - GermanyQrCodePaymentRecognizer - KosovoCode128PaymentRecognizer - SepaQrCodePaymentRecognizer - SerbiaPdf417PaymentRecognizer - SerbiaQrCodePaymentRecognizer - SlovakiaCode128PaymentRecognizer - SlovakiaDataMatrixPaymentRecognizer - SlovakiaQrCodePaymentRecognizer - SloveniaQrCodePaymentRecognizer - SwitzerlandQrCodePaymentRecognizer  Recognizers can be defined by setting HTML attribute "recognizers", for example:  `<photopay-in-browser recognizers="CroatiaPdf417PaymentRecognizer,CroatiaQrCodePaymentRecognizer"></photopay-in-browser>`
          */
         "rawRecognizers"?: string;
@@ -608,9 +864,9 @@ declare namespace LocalJSX {
          */
         "rawTranslations"?: string;
         /**
-          * Specify additional recognizer options.  Example: @TODO
+          * Specify recognizer options. This option can only bet set as a JavaScript property.  Pass an object to `recognizerOptions` property where each key represents a recognizer, while the value represents desired recognizer options.  ``` photopay.recognizerOptions = {    'CroatiaBaseBarcodePaymentRecognizer': {      'shouldSanitize': true    } } ```  For a full list of available recognizer options see source code of a recognizer. For example, list of available recognizer options for CroatiaBaseBarcodePaymentRecognizer can be seen in the `src/Recognizers/PhotoPay/Croatia/CroatiaBaseBarcodePaymentRecognizer.ts` file.
          */
-        "recognizerOptions"?: Array<string>;
+        "recognizerOptions"?: { [key: string]: any };
         /**
           * List of recognizers which should be used.  Available recognizers for PhotoPay:  - AustriaQrCodePaymentRecognizer - CroatiaPdf417PaymentRecognizer - CroatiaQrCodePaymentRecognizer - CzechiaQrCodePaymentRecognizer - GermanyQrCodePaymentRecognizer - KosovoCode128PaymentRecognizer - SepaQrCodePaymentRecognizer - SerbiaPdf417PaymentRecognizer - SerbiaQrCodePaymentRecognizer - SlovakiaCode128PaymentRecognizer - SlovakiaDataMatrixPaymentRecognizer - SlovakiaQrCodePaymentRecognizer - SloveniaQrCodePaymentRecognizer - SwitzerlandQrCodePaymentRecognizer  Recognizers can be defined by setting JS property "recognizers", for example:  ``` const photopay = document.querySelector('photopay-in-browser'); photopay.recognizers = ['CroatiaPdf417PaymentRecognizer', 'CroatiaQrCodePaymentRecognizer']; ```
          */
@@ -624,11 +880,32 @@ declare namespace LocalJSX {
          */
         "scanFromImage"?: boolean;
         /**
+          * Set to 'true' if text labels should be displayed below action buttons.  Default value is 'false'.
+         */
+        "showActionLabels"?: boolean;
+        /**
+          * Set to 'true' if for Barcode scanning camera feedback message should be displayed on camera screen.  Default value is 'false'.
+         */
+        "showCameraFeedbackBarcodeMessage"?: boolean;
+        /**
+          * Set to 'true' if modal window should be displayed in case of an error.  Default value is 'false'.
+         */
+        "showModalWindows"?: boolean;
+        /**
+          * Scan line animation option passed from root component.  Client can choose if scan line animation will be present in UI.  Default value is 'false'
+         */
+        "showScanningLine"?: boolean;
+        /**
           * Set custom translations for UI component. List of available translation keys can be found in `src/utils/translation.service.ts` file.
          */
         "translations"?: { [key: string]: string };
+        /**
+          * Defines the type of the WebAssembly build that will be loaded. If omitted, SDK will determine the best possible WebAssembly build which should be loaded based on the browser support.  Available WebAssembly builds:  - 'BASIC' - 'ADVANCED' - 'ADVANCED_WITH_THREADS'  For more information about different WebAssembly builds, check out the `src/MicroblinkSDK/WasmType.ts` file.
+         */
+        "wasmType"?: string;
     }
     interface IntrinsicElements {
+        "mb-api-process-status": MbApiProcessStatus;
         "mb-button": MbButton;
         "mb-camera-experience": MbCameraExperience;
         "mb-component": MbComponent;
@@ -645,6 +922,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "mb-api-process-status": LocalJSX.MbApiProcessStatus & JSXBase.HTMLAttributes<HTMLMbApiProcessStatusElement>;
             "mb-button": LocalJSX.MbButton & JSXBase.HTMLAttributes<HTMLMbButtonElement>;
             "mb-camera-experience": LocalJSX.MbCameraExperience & JSXBase.HTMLAttributes<HTMLMbCameraExperienceElement>;
             "mb-component": LocalJSX.MbComponent & JSXBase.HTMLAttributes<HTMLMbComponentElement>;

@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
     <title>PhotoPay UI: examples</title>
-    <style>
+    <!-- Copyright (c) Microblink Ltd. All rights reserved. -->
+<style>
       * {
         box-sizing: border-box;
       }
@@ -132,19 +133,13 @@
         margin-bottom: 1.5rem;
       }
     </style>
-    <script type="module" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
-    <script nomodule src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/ui/dist/photopay-in-browser.js"></script>
+    <script type="module" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.4/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
+    <script nomodule src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.4/ui/dist/photopay-in-browser.js"></script>
     <script type="text/javascript">
       window.getSafePathname = p => p[ p.length - 1 ] === '/' ? p : p.split( '/' ).slice( 0, -1 ).join( '/' ) + '/';
-      /**
-       *  "licensee": "localhost"
-       *  "licenseID": "8R8JIV022K067DHN"
-       *  "upToVersion": "8.0.0"
-       */
-      window.licenseKey = 'sRwAAAYJbG9jYWxob3N0r/lOPg4/w35CpHnVqljeBv+OKA6nslOOcWLLPbX4pPek5xvXzDW1/w75kxuKpNLr0jfB85DHlAkB7K6o7HRSnmj6+vrxEu+oF/Yk6LjoqG9zZKnjEf0FX+N4riuShwnn4Fm2Zwf00Nz8BWxHoYQ0zv1yuvx8b7ctgK+0xLNnlg4uNFmKSwyWM0V054XIgUV18pt7fQNc8mMy0tF5HIoXPWi0xn0Mb9svVwiEeNvQ1JrCKYR2oT+HA4wwv4hBFIz2t77xfgHcmD9fn0Ky2PA6wobDzMaPAskqdGi69PgBysNqgLPF5AIyEeYyVfZLkdky3A==';
+      window.licenseKey = 'sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHlVKjc9YGS1TbhKMOp/628Nz+3wucEKOKiY/6REBB0awpfPXXng8x6oFT8mEe+eFZwM6UTZKMO58PYWB2BUoq3KuLZWA0iIrN5l0EOTf4y0aTFs1KXROvrx2TbPyeNjYtPqtuMZq7Mo6L0GGWp5zehmxpUnuWBsW8/tR/8NLpfFQHucZnA+nnsS3Oj/qzbaf96oTjl1Ov4T4WVRbNK4yjzUre+L+NleOrZygXTQnqPLtPnhKmoHjJ9dtyTRp1C89NxNHUqVeacwp0Q8v+plPxr+fS8zSCMVeEWgumsmmLhFiaFLxHQ14VPYB+ycRpMi6FAZVPNXPbXtfjWi0g==';
 
-      window.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.3/resources";
-
+      window.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.4/resources";
     </script>
   </head>
   <body>
@@ -168,15 +163,63 @@
     </section>
     <script type="text/javascript">
       (function (){
-        const photopay = document.querySelector('#example-minimal photopay-in-browser');
+        const el = document.querySelector('#example-minimal photopay-in-browser');
 
-        photopay.engineLocation = window.engineLocation;
-        photopay.licenseKey = window.licenseKey;
-        photopay.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+        el.engineLocation = window.engineLocation;
+        el.licenseKey = window.licenseKey;
+        el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+
+
+
+        el.addEventListener('scanError', ev => {
+          console.log('scanError', ev.detail);
+
+          el.setUiState('ERROR');
+        });
+
+        el.addEventListener('scanSuccess', ev => {
+          console.log('scanSuccess', ev.detail);
+        });
       })();
     </script>
 
 
+
+
+
+
+    <section id="example-feedback-message">
+    <h2>Example with feedback message</h2>
+    <p>UI component with default behaviour where it's required to set valid license key and recognizer.</p>
+    <p><em>Recognizer: <strong>CroatiaPdf417PaymentRecognizer</strong></em></p>
+    <photopay-in-browser fullscreen-drop="false"></photopay-in-browser>
+<pre>&lt;photopay-in-browser
+engine-location="http://localhost/resources/"
+license-key="LICENSE-KEY-GOES-HERE"
+recognizers="CroatiaPdf417PaymentRecognizer"
+&gt;&lt;/photopay-in-browser&gt;</pre>
+</section>
+
+<script type="text/javascript">
+    (function (){
+        const el = document.querySelector('#example-feedback-message photopay-in-browser');
+
+        el.engineLocation = window.engineLocation;
+        el.licenseKey = window.licenseKey;
+        el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+        el.showCameraFeedbackBarcodeMessage = true;
+
+        el.addEventListener('scanError', ev => {
+          console.log('scanError', ev.detail);
+
+          el.setUiState('ERROR');
+        });
+
+        el.addEventListener('scanSuccess', ev => {
+          console.log('scanSuccess', ev.detail);
+        });
+    })();
+</script>
 
     <section id="example-localization">
       <h2>Custom messages</h2>
@@ -190,26 +233,39 @@
   recognizers="CroatiaPdf417PaymentRecognizer"
 &gt;&lt;/photopay-in-browser&gt;
 &lt;script&gt;
-  const photopay = document.querySelector('photopay-in-browser');
+  const el = document.querySelector('photopay-in-browser');
 
   // See src/utils/translations.ts for possible translation keys
-  photopay.translations = {
+  el.translations = {
     'action-message': 'Alternative CTA'
   };
 &lt;/script&gt;</pre>
     </section>
     <script type="text/javascript">
       (function (){
-        const photopay = document.querySelector('#example-localization photopay-in-browser');
+        const el = document.querySelector('#example-localization photopay-in-browser');
 
-        photopay.engineLocation = window.engineLocation;
-        photopay.licenseKey = window.licenseKey;
-        photopay.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+        el.engineLocation = window.engineLocation;
+        el.licenseKey = window.licenseKey;
+        el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
         window.setTimeout(() => {
-          photopay.translations = {
+          el.translations = { 
             'action-message': 'Alternative CTA'
           };
         }, 3000);
+
+
+
+        el.addEventListener('scanError', ev => {
+          console.log('scanError', ev.detail);
+
+          el.setUiState('ERROR');
+        });
+
+
+        el.addEventListener('scanSuccess', ev => {
+          console.log('scanSuccess', ev.detail);
+        });
       })();
     </script>
 
@@ -225,33 +281,45 @@
   dir="rtl"
 &gt;&lt;/photopay-in-browser&gt;
 &lt;script&gt;
-  const photopay = document.querySelector('photopay-in-browser');
+  const el = document.querySelector('photopay-in-browser');
 
   // See src/utils/translations.ts for possible translation keys
-  photopay.translations = {
+  el.translations = {
     'action-message': 'Alternative CTA'
   };
 &lt;/script&gt;</pre>
     </section>
     <script type="text/javascript">
       (function (){
-        const photopay = document.querySelector('#example-localization-rtl photopay-in-browser');
+        const el = document.querySelector('#example-localization-rtl photopay-in-browser');
 
-        photopay.engineLocation = window.engineLocation;
-        photopay.licenseKey = window.licenseKey;
-        photopay.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+        el.engineLocation = window.engineLocation;
+        el.licenseKey = window.licenseKey;
+        el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
 
         window.setTimeout(() => {
-          photopay.translations = {
+          el.translations = { 
             'action-message': 'Alternative CTA'
           };
         }, 3000);
+
+
+
+        el.addEventListener('scanError', ev => {
+          console.log('scanError', ev.detail);
+
+          el.setUiState('ERROR');
+        });
+
+        el.addEventListener('scanSuccess', ev => {
+          console.log('scanSuccess', ev.detail);
+        });
       })();
     </script>
 
     <section id="example-customization">
       <h2>UI customization</h2>
-      <p>It's possible to customize UI of PhotoPay component by using preset CSS variables.</p>
+      <p>It's possible to ize UI of CroatiaPdf417PaymentRecognizer component by using preset CSS variables.</p>
       <p><em>Recognizer: <strong>CroatiaPdf417PaymentRecognizer</strong></em></p>
       <div class="box">
         <photopay-in-browser fullscreen-drop="false"></photopay-in-browser>
@@ -318,11 +386,23 @@
     </section>
     <script type="text/javascript">
       (function (){
-        const photopay = document.querySelector('#example-customization photopay-in-browser');
+        const el = document.querySelector('#example-customization photopay-in-browser');
 
-        photopay.engineLocation = window.engineLocation;
-        photopay.licenseKey = window.licenseKey;
-        photopay.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+        el.engineLocation = window.engineLocation;
+        el.licenseKey = window.licenseKey;
+        el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+
+
+
+        el.addEventListener('scanError', ev => {
+          console.log('scanError', ev.detail);
+
+          el.setUiState('ERROR');
+        });
+
+        el.addEventListener('scanSuccess', ev => {
+          console.log('scanSuccess', ev.detail);
+        });
       })();
     </script>
 
@@ -388,7 +468,7 @@
 
         customizatorForm.addEventListener('submit', ev => {
           ev.preventDefault();
-
+          
           document.querySelector(
             '#example-customization .box'
           ).style.background = document.getElementById('customization-background').value;

@@ -1,5 +1,40 @@
 # Release notes
 
+## 7.7.4
+
+### Breaking changes
+
+* We've changed the way how recognizer options are set up when using the UI component
+    * You can now specify how a recognizer should behave by using the new `recognizerOptions` property.
+    * To see the full list of available recognizer options, as well as examples on how to use them, check out the [relevant source code](ui/src/components/blinkcard-in-browser/blinkcard-in-browser.tsx).
+
+### Performance improvements
+
+* We've added three different flavors of WebAssembly builds to the SDK, to provide better performance across all browsers
+    * Unless defined otherwise, the SDK will load the best possible bundle during initialization:
+        * `Basic` Same as the existing WebAssembly build, most compatible, but least performant.
+        * `Advanced` WebAssembly build that provides better performance but requires a browser with advanced features.
+        * `AdvancedWithThreads` Most performant WebAssembly build which requires a proper setup of COOP and COEP headers on the server-side.
+    * For more information about different WebAssembly builds and how to use them properly, check out the [relevant section](README.md/#deploymentGuidelines) in our official documentation
+
+### SDK changes
+
+* Constructor of `VideoRecognizer` class is now public
+
+### Camera management updates
+
+* We've enabled camera image flipping
+    * Method `flipCamera` has been added to [`VideoRecognizer`](src/MicroblinkSDK/VideoRecognizer.ts).
+    * You can now let your users mirror the camera image vertically in case they find it easier to scan that way.
+    * By default, the UI component will display a flip icon in the top left corner once the camera is live.
+* We've improved camera management on devices with multiple cameras
+    * Method `createVideoRecognizerFromCameraStream` has been extended in [`VideoRecognizer` class](src/MicroblinkSDK/VideoRecognizer.ts).
+    * Attribute `[camera-id]` has been added to the UI component so that your users can preselect their desired camera.
+
+### Bugfixes
+
+* We fixed the initialization problem that prevented the SDK from loading on iOS 13 and older versions
+
 ## 7.7.3
 
 * Fixed NPM package to include UI component.

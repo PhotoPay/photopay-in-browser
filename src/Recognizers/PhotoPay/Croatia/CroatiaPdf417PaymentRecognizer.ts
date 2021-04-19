@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microblink Ltd. All rights reserved.
+ */
+
 import { Recognizer, WasmSDK } from "../../../MicroblinkSDK/DataStructures";
 
 import

@@ -1,17 +1,21 @@
+/**
+ * Copyright (c) Microblink Ltd. All rights reserved.
+ */
+
 import { EventEmitter } from '@stencil/core';
 
-import * as PhotoPaySDK from "../../../es/photopay-sdk";
+import * as PhotoPaySDK from '../../../es/photopay-sdk';
 
 export interface MicroblinkUI {
   // SDK settings
   allowHelloMessage:    boolean;
   engineLocation:       string;
   licenseKey:           string;
+  wasmType:             string;
   rawRecognizers:       string;
   recognizers:          Array<string>;
-  rawRecognizerOptions: string;
-  recognizerOptions:    Array<string>;
-  includeSuccessFrame:  boolean;
+  recognizerOptions:    { [key: string]: any };
+  includeSuccessFrame?: boolean;
 
   // Functional properties
   enableDrag:            boolean;
@@ -23,23 +27,33 @@ export interface MicroblinkUI {
   // UI customization
   translations:         { [key: string]: string };
   rawTranslations:      string;
+  showActionLabels:     boolean;
+  showModalWindows:     boolean;
   iconCameraDefault:    string;
   iconCameraActive:     string;
   iconGalleryDefault:   string;
   iconGalleryActive:    string;
   iconInvalidFormat:    string;
-  iconSpinner:          string;
+  iconSpinnerScreenLoading: string;
+  iconSpinnerFromGalleryExperience: string;
 
   // Events
   fatalError:         EventEmitter<EventFatalError>;
   ready:              EventEmitter<EventReady>;
   scanError:          EventEmitter<EventScanError>;
   scanSuccess:        EventEmitter<EventScanSuccess>;
+  cameraScanStarted:  EventEmitter<null>;
+  imageScanStarted:   EventEmitter<null>;
+
+  // Methods
+  setUiState:         (state: 'ERROR' | 'LOADING' | 'NONE' | 'SUCCESS') => Promise<any>;
+  setUiMessage:       (state: 'FEEDBACK_ERROR' | 'FEEDBACK_INFO' | 'FEEDBACK_OK', message: string) => Promise<any>;
 }
 
 export interface SdkSettings {
   allowHelloMessage:  boolean;
   engineLocation:     string;
+  wasmType?:          PhotoPaySDK.WasmType;
 }
 
 /**
@@ -69,26 +83,31 @@ export class EventReady {
 }
 
 export class EventScanError {
-  code:     Code;
-  fatal:    boolean;
-  message:  string;
+  code:           Code;
+  fatal:          boolean;
+  message:        string;
+  recognizerName: string;
 
-  constructor(code: Code, fatal: boolean, message: string) {
+  constructor(code: Code, fatal: boolean, message: string, recognizerName: string) {
     this.code = code;
     this.fatal = fatal;
     this.message = message;
+    this.recognizerName = recognizerName;
   }
 }
 
 export class EventScanSuccess {
   recognizer:     PhotoPaySDK.RecognizerResult;
+  recognizerName: string;
   successFrame?:  PhotoPaySDK.SuccessFrameGrabberRecognizerResult;
 
   constructor(
     recognizer: PhotoPaySDK.RecognizerResult,
+    recognizerName: string,
     successFrame?: PhotoPaySDK.SuccessFrameGrabberRecognizerResult
   ) {
     this.recognizer = recognizer;
+    this.recognizerName = recognizerName;
 
     if (successFrame) {
       this.successFrame = successFrame;
@@ -137,26 +156,26 @@ export const AvailableRecognizers: { [key: string]: string } = {
   SlovakiaDataMatrixPaymentRecognizer:  'createSlovakiaDataMatrixPaymentRecognizer',
   SlovakiaQrCodePaymentRecognizer:      'createSlovakiaQrCodePaymentRecognizer',
   SloveniaQrCodePaymentRecognizer:      'createSloveniaQrCodePaymentRecognizer',
-  SwitzerlandQrCodePaymentRecognizer:   'createSwitzerlandQrCodePaymentRecognizer'
-}
-
-export const AvailableRecognizerOptions: { [key: string]: Array<string> } = {
+  SwitzerlandQrCodePaymentRecognizer:   'createSwitzerlandQrCodePaymentRecognizer',
 }
 
 export interface VideoRecognitionConfiguration {
   recognizers: Array<string>,
-  recognizerOptions?: Array<string>,
+  recognizerOptions?: any,
   successFrame: boolean,
-  cameraFeed: HTMLVideoElement
+  cameraFeed: HTMLVideoElement,
+  cameraId: string | null;
 }
 
 export interface ImageRecognitionConfiguration {
   recognizers: Array<string>,
-  recognizerOptions?: Array<string>,
+  recognizerOptions?: any,
+  thoroughScan?: boolean,
   fileList: FileList
 }
 
 export interface RecognizerInstance {
+  name: string,
   recognizer: PhotoPaySDK.Recognizer & { objectHandle: number },
   successFrame?: PhotoPaySDK.SuccessFrameGrabberRecognizer<PhotoPaySDK.Recognizer> & { objectHandle?: number }
 }
@@ -200,14 +219,17 @@ export interface RecognitionEvent {
 }
 
 export interface RecognitionResults {
-  recognizer: PhotoPaySDK.RecognizerResult,
-  successFrame?: PhotoPaySDK.SuccessFrameGrabberRecognizerResult
+  recognizer:     PhotoPaySDK.RecognizerResult,
+  recognizerName: string,
+  successFrame?:  PhotoPaySDK.SuccessFrameGrabberRecognizerResult,
+  imageCapture?:  boolean
 }
 
 export enum CameraExperience {
   Barcode         = 'BARCODE',
   CardCombined    = 'CARD_COMBINED',
-  CardSingleSide  = 'CARD_SINGLE_SIDE'
+  CardSingleSide  = 'CARD_SINGLE_SIDE',
+  BlinkCard       = 'BLINKCARD'
 }
 
 export enum CameraExperienceState {
@@ -228,8 +250,8 @@ export const CameraExperienceStateDuration = new Map([
   [ CameraExperienceState.Done, 300 ],
   [ CameraExperienceState.DoneAll, 400 ],
   [ CameraExperienceState.Flip, 3500 ],
-  [ CameraExperienceState.MoveCloser, 2000 ],
-  [ CameraExperienceState.MoveFarther, 2000 ]
+  [ CameraExperienceState.MoveCloser, 2500 ],
+  [ CameraExperienceState.MoveFarther, 2500 ]
 ]);
 
 export enum CameraExperienceReticleAnimation {
@@ -251,19 +273,8 @@ export enum FeedbackCode {
   ScanSuccessful      = 'SCAN_SUCCESSFUL'
 }
 
-export enum FeedbackState {
-  Error = 'ERROR_FEEDBACK',
-  Info  = 'INFO_FEEDBACK',
-  Ok    = 'OK'
-}
-
 export interface FeedbackMessage {
-  code: FeedbackCode;
-  state: FeedbackState;
-  message: string;
-}
-
-export interface ModalContent {
-  title: string;
-  body: string;
+  code?   : FeedbackCode;
+  state   : 'FEEDBACK_ERROR' | 'FEEDBACK_INFO' | 'FEEDBACK_OK';
+  message : string;
 }
