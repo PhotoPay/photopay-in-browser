@@ -1,8 +1,11 @@
+/**
+ * Copyright (c) Microblink Ltd. All rights reserved.
+ */
+
 import * as PhotoPaySDK from "../../../es/photopay-sdk";
 
 import {
   AvailableRecognizers,
-  AvailableRecognizerOptions,
   CameraExperience,
   Code,
   EventFatalError,
@@ -28,6 +31,10 @@ export class SdkService {
 
   private cancelInitiatedFromOutside: boolean = false;
 
+  private recognizerName: string;
+
+  private videoRecognizer: PhotoPaySDK.VideoRecognizer;
+
   public showOverlay: boolean = false;
 
   constructor() {
@@ -39,6 +46,10 @@ export class SdkService {
 
     loadSettings.allowHelloMessage = sdkSettings.allowHelloMessage;
     loadSettings.engineLocation = sdkSettings.engineLocation;
+
+    if (sdkSettings.wasmType) {
+      loadSettings.wasmType = sdkSettings.wasmType;
+    }
 
     return new Promise((resolve) => {
       PhotoPaySDK.loadWasmModule(loadSettings)
@@ -76,40 +87,7 @@ export class SdkService {
     }
   }
 
-  public checkRecognizerOptions(recognizers: Array<string>, recognizerOptions: Array<string>): CheckConclusion {
-    if (!recognizerOptions || !recognizerOptions.length) {
-      return {
-        status: true
-      }
-    }
-
-    for (const recognizerOption of recognizerOptions) {
-      let optionExistInProvidedRecognizers = false;
-
-      for (const recognizer of recognizers) {
-        const availableOptions = AvailableRecognizerOptions[recognizer];
-
-        if (availableOptions.indexOf(recognizerOption) > -1) {
-          optionExistInProvidedRecognizers = true;
-          break;
-        }
-      }
-
-      if (!optionExistInProvidedRecognizers) {
-        return {
-          status: false,
-          message: `Recognizer option "${ recognizerOption }" is not supported by available recognizers!`
-        }
-      }
-    }
-
-    return {
-      status: true
-    }
-  }
-
-  public getDesiredCameraExperience(recognizers: Array<string>): CameraExperience {
-    for (let i = 0; i < recognizers.length; ++i) {}
+  public getDesiredCameraExperience(_recognizers: Array<string> = [], _recognizerOptions: any = {}): CameraExperience {
     return CameraExperience.Barcode;
   }
 
@@ -118,6 +96,8 @@ export class SdkService {
     eventCallback: (ev: RecognitionEvent) => void
   ): Promise<void> {
     eventCallback({ status: RecognitionStatus.Preparing });
+
+    this.cancelInitiatedFromOutside = false;
 
     const recognizers = await this.createRecognizers(
       configuration.recognizers,
@@ -131,16 +111,17 @@ export class SdkService {
     );
 
     try {
-      const videoRecognizer = await PhotoPaySDK.VideoRecognizer.createVideoRecognizerFromCameraStream(
+      this.videoRecognizer = await PhotoPaySDK.VideoRecognizer.createVideoRecognizerFromCameraStream(
         configuration.cameraFeed,
-        recognizerRunner
+        recognizerRunner,
+        configuration.cameraId
       );
 
-      await videoRecognizer.setVideoRecognitionMode(PhotoPaySDK.VideoRecognitionMode.Recognition);
+      await this.videoRecognizer.setVideoRecognitionMode(PhotoPaySDK.VideoRecognitionMode.Recognition);
 
       this.eventEmitter$.addEventListener('terminate', async () => {
-        if (videoRecognizer && typeof videoRecognizer.cancelRecognition === 'function') {
-          videoRecognizer.cancelRecognition();
+        if (this.videoRecognizer && typeof this.videoRecognizer.cancelRecognition === 'function') {
+          this.videoRecognizer.cancelRecognition();
         }
 
         if (recognizerRunner) {
@@ -174,29 +155,36 @@ export class SdkService {
         }
 
         window.setTimeout(() => {
-          if (videoRecognizer) {
-            videoRecognizer.releaseVideoFeed();
+          if (this.videoRecognizer) {
+            this.videoRecognizer.releaseVideoFeed();
           }
         }, 1);
       });
 
-      videoRecognizer.startRecognition(
+      this.videoRecognizer.startRecognition(
         async (recognitionState: PhotoPaySDK.RecognizerResultState) => {
-          videoRecognizer.pauseRecognition();
+          this.videoRecognizer.pauseRecognition();
 
           eventCallback({ status: RecognitionStatus.Processing });
 
           if (recognitionState !== PhotoPaySDK.RecognizerResultState.Empty) {
             for (const recognizer of recognizers) {
               const results = await recognizer.recognizer.getResult();
+              this.recognizerName = recognizer.recognizer.recognizerName;
 
               if (!results || results.state === PhotoPaySDK.RecognizerResultState.Empty) {
                 eventCallback({
                   status: RecognitionStatus.EmptyResultState,
-                  data: { initiatedByUser: this.cancelInitiatedFromOutside }
+                  data: {
+                    initiatedByUser: this.cancelInitiatedFromOutside,
+                    recognizerName: this.recognizerName
+                  }
                 });
               } else {
-                const recognitionResults: RecognitionResults = { recognizer: results }
+                const recognitionResults: RecognitionResults = {
+                  recognizer: results,
+                  recognizerName: this.recognizerName
+                }
 
                 if (recognizer.successFrame) {
                   const successFrameResults = await recognizer.successFrame.getResult();
@@ -208,7 +196,11 @@ export class SdkService {
 
                 eventCallback({
                   status: RecognitionStatus.ScanSuccessful,
-                  data: recognitionResults
+                  data: {
+                    result: recognitionResults,
+                    initiatedByUser: this.cancelInitiatedFromOutside,
+                    imageCapture: this.recognizerName === 'BlinkIdImageCaptureRecognizer'
+                  }
                 });
                 break;
               }
@@ -216,13 +208,17 @@ export class SdkService {
           } else {
             eventCallback({
               status: RecognitionStatus.EmptyResultState,
-              data: { initiatedByUser: this.cancelInitiatedFromOutside }
+              data: {
+                initiatedByUser: this.cancelInitiatedFromOutside,
+                recognizerName: ''
+              }
             });
           }
 
-          window.setTimeout(() => void this.cancelRecognition(), 400);
-        }
-      );
+          if (this.recognizerName !== 'BlinkIdImageCaptureRecognizer') {
+            window.setTimeout(() => void this.cancelRecognition(), 400);
+          }
+        });
     } catch (error) {
       if (error && error.name === 'VideoRecognizerError') {
         const reason = (error as PhotoPaySDK.VideoRecognizerError).reason;
@@ -256,8 +252,18 @@ export class SdkService {
     }
   }
 
-  public isScanFromImageAvailable(recognizers: Array<string>): boolean {
-    for (let i = 0; i < recognizers.length; ++i) {}
+  public async flipCamera(): Promise<void> {
+    await this.videoRecognizer.flipCamera();
+  }
+
+  public isCameraFlipped(): boolean {
+    if (!this.videoRecognizer) {
+      return false;
+    }
+    return this.videoRecognizer.cameraFlipped;
+  }
+
+  public isScanFromImageAvailable(_recognizers: Array<string> = [], _recognizerOptions: any = {}): boolean {
     return true;
   }
 
@@ -294,9 +300,10 @@ export class SdkService {
       return;
     }
 
-    const imageElement = document.createElement('img');
+    const imageElement = new Image();
     imageElement.src = URL.createObjectURL(file);
     await imageElement.decode();
+
     const imageFrame = PhotoPaySDK.captureFrame(imageElement);
 
     this.eventEmitter$.addEventListener('terminate', async () => {
@@ -321,6 +328,8 @@ export class SdkService {
           await recognizer.recognizer.delete();
         }
       }
+
+      this.eventEmitter$.dispatchEvent(new Event('terminate:done'));
     });
 
     // Get results
@@ -335,10 +344,17 @@ export class SdkService {
         if (!results || results.state === PhotoPaySDK.RecognizerResultState.Empty) {
           eventCallback({
             status: RecognitionStatus.EmptyResultState,
-            data: { initiatedByUser: this.cancelInitiatedFromOutside }
+            data: {
+              initiatedByUser: this.cancelInitiatedFromOutside,
+              recognizerName: recognizer.name
+            }
           });
         } else {
-          const recognitionResults: RecognitionResults = { recognizer: results }
+          const recognitionResults: RecognitionResults = {
+            recognizer: results,
+            imageCapture: recognizer.name === 'BlinkIdImageCaptureRecognizer',
+            recognizerName: recognizer.name
+          };
           eventCallback({
             status: RecognitionStatus.ScanSuccessful,
             data: recognitionResults
@@ -347,9 +363,13 @@ export class SdkService {
         }
       }
     } else {
+
       eventCallback({
         status: RecognitionStatus.EmptyResultState,
-        data: { initiatedByUser: this.cancelInitiatedFromOutside }
+        data: {
+          initiatedByUser: this.cancelInitiatedFromOutside,
+          recognizerName: ''
+        }
       });
     }
 
@@ -358,6 +378,10 @@ export class SdkService {
 
   public async stopRecognition() {
     void await this.cancelRecognition(true);
+  }
+
+  public async resumeRecognition(): Promise<void> {
+    this.videoRecognizer.resumeRecognition(true);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -370,7 +394,7 @@ export class SdkService {
 
   private async createRecognizers(
     recognizers: Array<string>,
-    recognizerOptions?: Array<string>,
+    recognizerOptions?: any,
     successFrame: boolean = false
   ): Promise<Array<RecognizerInstance>> {
     const pureRecognizers = [];
@@ -380,14 +404,14 @@ export class SdkService {
       pureRecognizers.push(instance);
     }
 
-    if (recognizerOptions && recognizerOptions.length) {
+    if (recognizerOptions && Object.keys(recognizerOptions).length > 0) {
       for (const recognizer of pureRecognizers) {
         let settingsUpdated = false;
         const settings = await recognizer.currentSettings();
 
-        for (const setting of recognizerOptions) {
-          if (setting in settings) {
-            settings[setting] = true;
+        for (const [key, value] of Object.entries(recognizerOptions[recognizer.recognizerName])) {
+          if (key in settings) {
+            settings[key] = value;
             settingsUpdated = true;
           }
         }
@@ -400,8 +424,9 @@ export class SdkService {
 
     const recognizerInstances = [];
 
-    for (const recognizer of pureRecognizers) {
-      const instance: RecognizerInstance = { recognizer }
+    for (let i = 0; i < pureRecognizers.length; ++i) {
+      const recognizer = pureRecognizers[i];
+      const instance: RecognizerInstance = { name: recognizers[i], recognizer }
 
       if (successFrame) {
         const successFrameGrabber = await PhotoPaySDK.createSuccessFrameGrabberRecognizer(this.sdk, recognizer);
@@ -424,7 +449,6 @@ export class SdkService {
         eventCallback({ status: RecognitionStatus.DetectionStatusChange, data: quad });
 
         const detectionStatus = quad.detectionStatus;
-
         switch (detectionStatus) {
           case PhotoPaySDK.DetectionStatus.Fail:
             eventCallback({ status: RecognitionStatus.DetectionStatusSuccess });

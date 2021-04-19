@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microblink Ltd. All rights reserved.
+ */
+
 import { Recognizer, RecognizerSettings, WasmSDK } from "../../../MicroblinkSDK/DataStructures";
 import { SerbiaBaseBarcodePaymentRecognizerResult } from "./SerbiaBaseBarcodePaymentRecognizer";
 

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microblink Ltd. All rights reserved.
+ */
+
 import * as PhotoPaySDK from "../../../es/photopay-sdk";
 
 export function hasVideoDevices(): Promise<boolean> {

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microblink Ltd. All rights reserved.
+ */
+
 // Import typings for UI component
 import "@microblink/photopay-in-browser-sdk/ui";
 
@@ -18,7 +22,7 @@ function initializeUiComponent()
         throw "Could not find UI component!";
     }
 
-    photopay.licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHlVLi84YJhfzkKNDWt5k6TOIq/BqQY4bts33tGdQc7RawrRGyvbnbj5DEV92rrMkoGMUk3QCySYI9IPMLsIG1aPiOLf1Dhq9FZbGgJvTq6f1O/4pQzxtWn5rN+fs9TqjLz+ei2k0Bv12JREFNsBroMSZUuIDW7uU2bAnW4qW2cedBUaDI9KuhBAtS1B/78M3zb7Fm3dhvMvXj2Mlhl+iwFDwqAhHb5f8vxRICbnqjrb9GO34z4jgJFVQ/mDFZzgLASEJlUO01vfBs18GWt78ups4pIgiIpJph2DhMi76GMxoqQKJfoEs6Wl+VwmIftwWJQbMg==";
+    photopay.licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHlVKjc9YGS1TbhKMOp/628Nz+3wucEKOKiY/6REBB0awpfPXXng8x6oFT8mEe+eFZwM6UTZKMO58PYWB2BUoq3KuLZWA0iIrN5l0EOTf4y0aTFs1KXROvrx2TbPyeNjYtPqtuMZq7Mo6L0GGWp5zehmxpUnuWBsW8/tR/8NLpfFQHucZnA+nnsS3Oj/qzbaf96oTjl1Ov4T4WVRbNK4yjzUre+L+NleOrZygXTQnqPLtPnhKmoHjJ9dtyTRp1C89NxNHUqVeacwp0Q8v+plPxr+fS8zSCMVeEWgumsmmLhFiaFLxHQ14VPYB+ycRpMi6FAZVPNXPbXtfjWi0g==";
     photopay.engineLocation = window.location.origin;
     photopay.recognizers = [ "CroatiaPdf417PaymentRecognizer" ];
 

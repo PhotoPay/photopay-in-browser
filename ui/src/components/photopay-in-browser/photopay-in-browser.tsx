@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microblink Ltd. All rights reserved.
+ */
+
 import {
   Component,
   Element,
@@ -5,7 +9,8 @@ import {
   EventEmitter,
   Host,
   h,
-  Prop
+  Prop,
+  Method
 } from '@stencil/core';
 
 import {
@@ -17,8 +22,8 @@ import {
   MicroblinkUI
 } from '../../utils/data-structures';
 
+import { SdkService } from '../../utils/sdk.service';
 import { TranslationService } from '../../utils/translation.service';
-
 import * as GenericHelpers from '../../utils/generic.helpers';
 
 @Component({
@@ -58,6 +63,20 @@ export class PhotopayInBrowser implements MicroblinkUI {
    * Keep in mind that UI component will reinitialize every time license key is changed.
    */
   @Prop() licenseKey: string;
+
+  /**
+   * Defines the type of the WebAssembly build that will be loaded. If omitted, SDK will determine
+   * the best possible WebAssembly build which should be loaded based on the browser support.
+   *
+   * Available WebAssembly builds:
+   *
+   * - 'BASIC'
+   * - 'ADVANCED'
+   * - 'ADVANCED_WITH_THREADS'
+   *
+   * For more information about different WebAssembly builds, check out the `src/MicroblinkSDK/WasmType.ts` file.
+   */
+   @Prop() wasmType: string = '';
 
   /**
    * List of recognizers which should be used.
@@ -115,18 +134,24 @@ export class PhotopayInBrowser implements MicroblinkUI {
   @Prop() recognizers: Array<string>;
 
   /**
-   * Specify additional recognizer options.
+   * Specify recognizer options. This option can only bet set as a JavaScript property.
    *
-   * Example: @TODO
-   */
-  @Prop({ attribute: 'recognizer-options' }) rawRecognizerOptions: string;
-
-  /**
-   * Specify additional recognizer options.
+   * Pass an object to `recognizerOptions` property where each key represents a recognizer, while
+   * the value represents desired recognizer options.
    *
-   * Example: @TODO
+   * ```
+   * photopay.recognizerOptions = {
+   *   'CroatiaBaseBarcodePaymentRecognizer': {
+   *     'shouldSanitize': true
+   *   }
+   * }
+   * ```
+   *
+   * For a full list of available recognizer options see source code of a recognizer. For example,
+   * list of available recognizer options for CroatiaBaseBarcodePaymentRecognizer can be seen in the
+   * `src/Recognizers/PhotoPay/Croatia/CroatiaBaseBarcodePaymentRecognizer.ts` file.
    */
-  @Prop() recognizerOptions: Array<string>;
+  @Prop() recognizerOptions: { [key: string]: any };
 
   /**
    * Set to 'true' if success frame should be included in final scanning results.
@@ -176,6 +201,37 @@ export class PhotopayInBrowser implements MicroblinkUI {
    * Default value is 'true'.
    */
   @Prop() scanFromImage: boolean = true;
+
+  /**
+   * Set to 'true' if text labels should be displayed below action buttons.
+   *
+   * Default value is 'false'.
+   */
+  @Prop() showActionLabels: boolean = false;
+
+  /**
+   * Scan line animation option passed from root component.
+   *
+   * Client can choose if scan line animation will be present in UI.
+   *
+   * Default value is 'false'
+   *
+   */
+   @Prop() showScanningLine: boolean = false;
+
+  /**
+   * Set to 'true' if modal window should be displayed in case of an error.
+   *
+   * Default value is 'false'.
+   */
+  @Prop() showModalWindows: boolean = false;
+
+  /**
+   * Set to 'true' if for Barcode scanning camera feedback message should be displayed on camera screen.
+   *
+   * Default value is 'false'.
+   */
+   @Prop() showCameraFeedbackBarcodeMessage: boolean = false;
 
   /**
    * Set custom translations for UI component. List of available translation keys can be found in
@@ -237,7 +293,25 @@ export class PhotopayInBrowser implements MicroblinkUI {
    *
    * Image is scaled to 24x24 pixels.
    */
-  @Prop() iconSpinner: string;
+  @Prop() iconSpinnerScreenLoading: string;
+
+  /**
+   * Provide alternative loading icon. CSS rotation is applied to this icon.
+   *
+   * Every value that is placed here is passed as a value of `src` attribute to <img> element. This attribute can be
+   * used to provide location, base64 or any URL of alternative gallery icon.
+   *
+   * Image is scaled to 24x24 pixels.
+   */
+  @Prop() iconSpinnerFromGalleryExperience: string;
+
+  /**
+   * Camera device ID passed from root component.
+   *
+   * Client can choose which camera to turn on if array of cameras exists.
+   *
+   */
+  @Prop() cameraId: string | null = null;
 
   /**
    * Event which is emitted during initialization of UI component.
@@ -267,18 +341,52 @@ export class PhotopayInBrowser implements MicroblinkUI {
    */
   @Event() feedback: EventEmitter<FeedbackMessage>;
 
+  /**
+   * Event which is emitted when camera scan is started, i.e. when user clicks on
+   * _scan from camera_ button.
+   */
+  @Event() cameraScanStarted: EventEmitter<null>;
+
+  /**
+   * Event which is emitted when image scan is started, i.e. when user clicks on
+   * _scan from gallery button.
+   */
+  @Event() imageScanStarted: EventEmitter<null>;
+
+  /**
+   * Control UI state of camera overlay.
+   *
+   * Possible values are 'ERROR' | 'LOADING' | 'NONE' | 'SUCCESS'.
+   *
+   * In case of state `ERROR` and if `showModalWindows` is set to `true`, modal window
+   * with error message will be displayed. Otherwise, UI will close.
+   */
+  @Method()
+  async setUiState(state: 'ERROR' | 'LOADING' | 'NONE' | 'SUCCESS') {
+    this.mbComponentEl.setUiState(state);
+  }
+
+  /**
+   * Show message alongside UI component.
+   *
+   * Possible values for `state` are 'FEEDBACK_ERROR' | 'FEEDBACK_INFO' | 'FEEDBACK_OK'.
+   */
+  @Method()
+  async setUiMessage(state: 'FEEDBACK_ERROR' | 'FEEDBACK_INFO' | 'FEEDBACK_OK', message: string) {
+    this.feedbackEl.show({ state, message });
+  }
+
   @Element() hostEl: HTMLElement;
 
   async componentWillRender() {
     const rawRecognizers = GenericHelpers.stringToArray(this.rawRecognizers);
     this.finalRecognizers = this.recognizers ? this.recognizers : rawRecognizers;
 
-    const rawRecognizerOptions = GenericHelpers.stringToArray(this.rawRecognizerOptions);
-    this.finalRecognizerOptions = this.recognizerOptions ? this.recognizerOptions : rawRecognizerOptions;
-
     const rawTranslations = GenericHelpers.stringToObject(this.rawTranslations);
     this.finalTranslations = this.translations ? this.translations : rawTranslations;
     this.translationService = new TranslationService(this.finalTranslations || {});
+
+    this.sdkService = new SdkService();
   }
 
   render() {
@@ -286,23 +394,32 @@ export class PhotopayInBrowser implements MicroblinkUI {
       <Host>
         <mb-container>
           <mb-component dir={ this.hostEl.getAttribute('dir') }
+                        ref={ el => this.mbComponentEl = el as HTMLMbComponentElement }
                         allowHelloMessage={ this.allowHelloMessage }
                         engineLocation={ this.engineLocation }
                         licenseKey={ this.licenseKey }
+                        wasmType={ this.wasmType }
                         recognizers={ this.finalRecognizers }
-                        recognizerOptions={ this.finalRecognizerOptions }
+                        recognizerOptions={ this.recognizerOptions }
                         includeSuccessFrame={ this.includeSuccessFrame }
                         enableDrag={ this.enableDrag }
                         hideLoadingAndErrorUi={ this.hideLoadingAndErrorUi }
                         scanFromCamera={ this.scanFromCamera }
                         scanFromImage={ this.scanFromImage }
+                        showScanningLine={ this.showScanningLine }
+                        showActionLabels={ this.showActionLabels }
+                        showModalWindows={ this.showModalWindows }
+                        showCameraFeedbackBarcodeMessage={ this.showCameraFeedbackBarcodeMessage }
                         iconCameraDefault={ this.iconCameraDefault}
                         iconCameraActive={ this.iconCameraActive }
                         iconGalleryDefault={ this.iconGalleryDefault }
                         iconGalleryActive={ this.iconGalleryActive }
-                        iconInvalid-format={ this.iconInvalidFormat }
-                        iconSpinner={ this.iconSpinner }
+                        iconInvalidFormat={ this.iconInvalidFormat }
+                        iconSpinnerScreenLoading={ this.iconSpinnerScreenLoading }
+                        iconSpinnerFromGalleryExperience={ this.iconSpinnerFromGalleryExperience }
+                        sdkService={ this.sdkService }
                         translationService={ this.translationService }
+                        cameraId={ this.cameraId }
                         onFeedback={ (ev: CustomEvent<FeedbackMessage>) => this.feedbackEl.show(ev.detail) }>
           </mb-component>
 
@@ -315,11 +432,12 @@ export class PhotopayInBrowser implements MicroblinkUI {
     );
   }
 
+  private sdkService: SdkService;
   private translationService: TranslationService;
 
   private finalRecognizers: Array<string>;
-  private finalRecognizerOptions: Array<string>;
   private finalTranslations: { [key: string]: string };
 
   private feedbackEl!: HTMLMbFeedbackElement;
+  private mbComponentEl!: HTMLMbComponentElement;
 }

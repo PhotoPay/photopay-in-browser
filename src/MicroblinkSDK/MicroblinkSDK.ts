@@ -1,3 +1,6 @@
+/**
+ * Copyright (c) Microblink Ltd. All rights reserved.
+ */
 
 import { WasmSDKWorker } from "./worker/WorkerSDKBackend";
 import { Recognizer, RecognizerRunner, WasmSDK } from "./DataStructures";
@@ -89,6 +92,7 @@ export function isBrowserSupported(): boolean
     }
     return false;
 }
+
 
 /**
  * Asynchronously loads and compiles the WebAssembly module.
