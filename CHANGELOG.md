@@ -6,7 +6,7 @@
 
 * We've changed the way how recognizer options are set up when using the UI component
     * You can now specify how a recognizer should behave by using the new `recognizerOptions` property.
-    * To see the full list of available recognizer options, as well as examples on how to use them, check out the [relevant source code](ui/src/components/blinkcard-in-browser/blinkcard-in-browser.tsx).
+    * To see the full list of available recognizer options, as well as examples on how to use them, check out the [relevant source code](ui/src/components/photopay-in-browser/photopay-in-browser.tsx).
 
 ### Performance improvements
 
