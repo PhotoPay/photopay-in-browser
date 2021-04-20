@@ -44,6 +44,14 @@
                 // Important: if attributes or properties are changed, whole component is rerendered
                 const photopay = document.querySelector( "photopay-in-browser" );
 
+                /* [TEMPORARY FIX]
+                 * Use basic WebAssembly builds since most performant option requires server setup and unpkg.com, which is used
+                 * for examples, doesn't support COOP and COEP headers.
+                 *
+                 * For more information see "Integration" section in the official documentation.
+                 */
+                photopay.wasmType = "BASIC";
+
                 photopay.engineLocation = window.location.origin + "/resources/";
 
                 photopay.addEventListener
