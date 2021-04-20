@@ -1,5 +1,9 @@
 # Release notes
 
+## 7.7.5
+
+* We've fixed a broken `rollup.config.js` which resulted in unusable UMD development bundle
+
 ## 7.7.4
 
 ### Breaking changes
