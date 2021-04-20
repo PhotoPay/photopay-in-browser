@@ -165,11 +165,17 @@
       (function (){
         const el = document.querySelector('#example-minimal photopay-in-browser');
 
+        /* [TEMPORARY FIX]
+         * Use basic WebAssembly builds since most performant option requires server setup and unpkg.com, which is used
+         * for examples, doesn't support COOP and COEP headers.
+         *
+         * For more information see "Integration" section in the official documentation.
+         */
+        el.wasmType = "BASIC";
+
         el.engineLocation = window.engineLocation;
         el.licenseKey = window.licenseKey;
         el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
-
-
 
         el.addEventListener('scanError', ev => {
           console.log('scanError', ev.detail);
@@ -182,11 +188,6 @@
         });
       })();
     </script>
-
-
-
-
-
 
     <section id="example-feedback-message">
     <h2>Example with feedback message</h2>
@@ -203,6 +204,14 @@ recognizers="CroatiaPdf417PaymentRecognizer"
 <script type="text/javascript">
     (function (){
         const el = document.querySelector('#example-feedback-message photopay-in-browser');
+
+        /* [TEMPORARY FIX]
+         * Use basic WebAssembly builds since most performant option requires server setup and unpkg.com, which is used
+         * for examples, doesn't support COOP and COEP headers.
+         *
+         * For more information see "Integration" section in the official documentation.
+         */
+        el.wasmType = "BASIC";
 
         el.engineLocation = window.engineLocation;
         el.licenseKey = window.licenseKey;
@@ -245,23 +254,29 @@ recognizers="CroatiaPdf417PaymentRecognizer"
       (function (){
         const el = document.querySelector('#example-localization photopay-in-browser');
 
+        /* [TEMPORARY FIX]
+         * Use basic WebAssembly builds since most performant option requires server setup and unpkg.com, which is used
+         * for examples, doesn't support COOP and COEP headers.
+         *
+         * For more information see "Integration" section in the official documentation.
+         */
+        el.wasmType = "BASIC";
+
         el.engineLocation = window.engineLocation;
         el.licenseKey = window.licenseKey;
         el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
+
         window.setTimeout(() => {
-          el.translations = { 
+          el.translations = {
             'action-message': 'Alternative CTA'
           };
         }, 3000);
-
-
 
         el.addEventListener('scanError', ev => {
           console.log('scanError', ev.detail);
 
           el.setUiState('ERROR');
         });
-
 
         el.addEventListener('scanSuccess', ev => {
           console.log('scanSuccess', ev.detail);
@@ -293,17 +308,23 @@ recognizers="CroatiaPdf417PaymentRecognizer"
       (function (){
         const el = document.querySelector('#example-localization-rtl photopay-in-browser');
 
+        /* [TEMPORARY FIX]
+         * Use basic WebAssembly builds since most performant option requires server setup and unpkg.com, which is used
+         * for examples, doesn't support COOP and COEP headers.
+         *
+         * For more information see "Integration" section in the official documentation.
+         */
+        el.wasmType = "BASIC";
+
         el.engineLocation = window.engineLocation;
         el.licenseKey = window.licenseKey;
         el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
 
         window.setTimeout(() => {
-          el.translations = { 
+          el.translations = {
             'action-message': 'Alternative CTA'
           };
         }, 3000);
-
-
 
         el.addEventListener('scanError', ev => {
           console.log('scanError', ev.detail);
@@ -388,11 +409,17 @@ recognizers="CroatiaPdf417PaymentRecognizer"
       (function (){
         const el = document.querySelector('#example-customization photopay-in-browser');
 
+        /* [TEMPORARY FIX]
+         * Use basic WebAssembly builds since most performant option requires server setup and unpkg.com, which is used
+         * for examples, doesn't support COOP and COEP headers.
+         *
+         * For more information see "Integration" section in the official documentation.
+         */
+        el.wasmType = "BASIC";
+
         el.engineLocation = window.engineLocation;
         el.licenseKey = window.licenseKey;
         el.recognizers = ['CroatiaPdf417PaymentRecognizer'];
-
-
 
         el.addEventListener('scanError', ev => {
           console.log('scanError', ev.detail);
@@ -468,7 +495,7 @@ recognizers="CroatiaPdf417PaymentRecognizer"
 
         customizatorForm.addEventListener('submit', ev => {
           ev.preventDefault();
-          
+
           document.querySelector(
             '#example-customization .box'
           ).style.background = document.getElementById('customization-background').value;
