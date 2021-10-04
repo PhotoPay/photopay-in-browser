@@ -124,10 +124,15 @@ to use the SDK in both JavaScript and TypeScript projects.
 
 ---
 
-Alternatively, it's possible to use UMD builds, which can be loaded from [the `dist` folder on unpkg](https://unpkg.com/@microblink/photopay-in-browser-sdk/dist/). The UMD builds make `PhotoPaySDK` available as a `window.PhotoPaySDK` global variable:
+Alternatively, it's possible to use UMD builds which can be loaded from public CDN services.
+
+However, **we strongly advise** that you host the JavaScript bundles on your infrastructure since there is no guarantee that the public CDN service has satisfactory uptime and availability throughout the world.
+
+For example, it's possible to use UMD builds from [the `dist` folder on Unpkg CDN](https://unpkg.com/@microblink/photopay-in-browser-sdk/dist/). The UMD builds make `PhotoPaySDK` available as a `window.PhotoPaySDK` global variable:
 
 ```html
-<script src="https://unpkg.com/@microblink/photopay-in-browser-sdk/dist/photopay-sdk.min.js"></script>
+<!-- IMPORTANT: change "X.Y.Z" to the version number you wish to use! -->
+<script src="https://unpkg.com/@microblink/photopay-in-browser-sdk@X.Y.Z/dist/photopay-sdk.min.js"></script>
 ```
 
 Finally, it's possible to use ES builds, which can be downloaded from [the `es` folder on unpkg](https://unpkg.com/@microblink/photopay-in-browser-sdk/es/). ES modules are used in a similar manner as NPM package:
@@ -199,7 +204,11 @@ For example, in `package.json` you should have something like `"@microblink/phot
     import * as PhotoPaySDK from "@microblink/photopay-in-browser-sdk";
 
     const recognizer = await PhotoPaySDK.createCroatiaPdf417PaymentRecognizer( wasmSDK );
-    const recognizerRunner = await PhotoPaySDK.createRecognizerRunner( wasmSDK, [ recognizer ], true );
+    const recognizerRunner = await PhotoPaySDK.createRecognizerRunner(
+        wasmSDK,
+        [ recognizer ],
+        true
+    );
     ```
 
 5. Obtain a reference to your HTML video element and create a `VideoRecognizer` using the element and your instance of `RecognizerRunner` which then can be used to process input video stream:
@@ -212,7 +221,23 @@ For example, in `package.json` you should have something like `"@microblink/phot
             cameraFeed,
             recognizerRunner
         );
+
+        // There is more than one way to handle recognition
+
+        // Using the recognize() method will provide you with the default behavior,
+        // such as built-in error handling, timeout and video feed pausing.
         const processResult = await videoRecognizer.recognize();
+
+        // Using the startRecognition() method allows you to pass your own onScanningDone callback, 
+        // giving you the option to create custom behavior.
+        const processResult = await videoRecognizer.startRecognition(
+            async ( recognitionState ) => 
+            {
+                videoRecognizer.pauseRecognition();
+                return recognitionState;
+            }
+        );
+
         // To obtain recognition results see next step
     }
     catch ( error )
@@ -227,7 +252,7 @@ For example, in `package.json` you should have something like `"@microblink/phot
     }
     ```
 
-6. If `processResult` returned from `VideoRecognizer's` method `recognize` is not `PhotoPaySDK.RecognizerResultState.Empty`, then at least one recognizer given to the `RecognizerRunner` above contains a recognition result. You can extract the result from each recognizer using its `getResult` method:
+6. If `processResult` returned from `VideoRecognizer's` method `recognize` or `startRecognition` is not `PhotoPaySDK.RecognizerResultState.Empty`, then at least one recognizer given to the `RecognizerRunner` above contains a recognition result. You can extract the result from each recognizer using its `getResult` method:
 
     ```typescript
     if ( processResult !== PhotoPaySDK.RecognizerResultState.Empty )
@@ -290,7 +315,7 @@ const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( "your-base64-license-k
  * Hello message will contain the name and version of the SDK, which are required information for all support
  * tickets.
  *
- * Default value is true.
+ * The default value is true.
  */
 loadSettings.allowHelloMessage = true;
 
@@ -298,8 +323,8 @@ loadSettings.allowHelloMessage = true;
  * Absolute location of WASM and related JS/data files. Useful when resource files should be loaded over CDN, or
  * when web frameworks/libraries are used which store resources in specific locations, e.g. inside "assets" folder.
  *
- * Important: if the engine is hosted on another origin, CORS must be enabled between two hosts. That is, server where
- * engine is hosted must have 'Access-Control-Allow-Origin' header for the location of the web app.
+ * Important: if the engine is hosted on another origin, CORS must be enabled between two hosts. That is, server
+ * where engine is hosted must have 'Access-Control-Allow-Origin' header for the location of the web app.
  *
  * Important: SDK and WASM resources must be from the same version of a package.
  *
@@ -319,7 +344,7 @@ wasmType: WasmType | null = null;
  *
  * This can be useful for displaying progress bar to users with slow connections.
  *
- * Default value is "null".
+ * The default value is "null".
  *
  * @example
  * loadSettings.loadProgressCallback = (percentage: number) => console.log(`${ percentage }% loaded!`);
@@ -349,16 +374,18 @@ WASM wrapper contain three different builds:
 * `Basic`
 
     * The WASM that will be loaded will be most compatible with all browsers that support the WASM, but will lack features that could be used to improve performance.
-    
+
 * `Advanced`
 
-    * The WASM that will be loaded will be built with advanced WASM features, such as bulk memory, non-trapping floating point and sign extension. Such WASM can only be executed in browsers that support those features. Attempting to run this WASM in a non-compatible browser will crash your app.
+    * The WASM that will be loaded will be built with advanced WASM features, such as bulk memory, SIMD, non-trapping floating point and sign extension. Such WASM can only be executed in browsers that support those features. Attempting to run this WASM in a non-compatible browser will crash your app.
 
 * `AdvancedWithThreads`
 
     * The WASM that will be loaded will be build with advanced WASM features, just like above. Additionally, it will be also built with support for multi-threaded processing. This feature requires a browser with support for both advanced WASM features and `SharedArrayBuffer`.
 
     * For multi-threaded processing there are some things that needs to be set up additionally, like COOP and COEP headers, more info about web server setup can be found [here](#wasmsetup).
+
+    * Keep in mind that this WASM bundle requires that all resources are on the same origin. So, for example, it's not possible to load WASM files from some CDN. This limitation exists due to browser security rules.
 
 _Files: resources/{basic,advanced,advanced-threads}/PhotoPayWasmSDK.{data,js,wasm}_
 

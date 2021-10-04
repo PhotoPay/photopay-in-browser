@@ -34,18 +34,10 @@ function main()
     }
 
     // 1. It's possible to obtain a free trial license key on microblink.com
-    const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHlVKjc9YGS1TbhKMOp/628Nz+3wucEKOKiY/6REBB0awpfPXXng8x6oFT8mEe+eFZwM6UTZKMO58PYWB2BUoq3KuLZWA0iIrN5l0EOTf4y0aTFs1KXROvrx2TbPyeNjYtPqtuMZq7Mo6L0GGWp5zehmxpUnuWBsW8/tR/8NLpfFQHucZnA+nnsS3Oj/qzbaf96oTjl1Ov4T4WVRbNK4yjzUre+L+NleOrZygXTQnqPLtPnhKmoHjJ9dtyTRp1C89NxNHUqVeacwp0Q8v+plPxr+fS8zSCMVeEWgumsmmLhFiaFLxHQ14VPYB+ycRpMi6FAZVPNXPbXtfjWi0g==";
+    const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHnVLccTzWKAOwpqo/kZnt9RuJ49wvrYu8FtZKzz8HgrRLLuFu8Aa/A0dJ7yS2tBJcItgkvFU0/aXqXxPPzGDL1K6IlISV7+35V2/+b6afrp5EST/AhZrCJ/lt7hUGNkHLvQQkz+gVMaYOA2A3bcw7XzvdAS3NE/fEIPhQflM9BYZFHyXqb836jYE9OEs+mytFnhq+CnzclDctzAd0PGOcjdsy6msxwC2HtpJGcbc/NK5vxq8MsMQxbq4dBzoKShyhmmUp6m7up6xLn5JXEJkk2A39L33Yv2vaREj51/DyhPkkfbJtOKL41wL55UqYqxY4DNLBYuXHy5RDZgmi0=";
 
     // 2. Create instance of SDK load settings with your license key
     const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings( licenseKey );
-
-    /* [TEMPORARY FIX]
-     * Use basic WebAssembly builds since most performant option requires server setup and unpkg.com, which is used
-     * for examples, doesn't support COOP and COEP headers.
-     *
-     * For more information see "Integration" section in the official documentation.
-     */
-    loadSettings.wasmType = "BASIC";
 
     // [OPTIONAL] Change default settings
 
