@@ -5,7 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
         <title>Example: PhotoPay UI</title>
 
-        <script type="module" src="/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
+        <!-- Import UI component which includes WASM library -->
+        <!-- Keep in mind that Unpkg CDN is used for demonstration, it's not intended to be used in production! -->
+        <script type="module" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.7/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
         <style type="text/css">
             html,
             body {
@@ -30,11 +32,26 @@
 
                 padding: 20px;
             }
+
+            photopay-in-browser {
+                max-width: 400px;
+
+                /* Customization of UI - see variables in src/components/shared/styles/_globals.scss */
+                /*
+                --mb-component-background: red;
+                --mb-component-action-label: none;
+                --mb-component-border-width: 0;
+                --mb-component-action-buttons-width: 100%;
+                --mb-component-action-buttons-justify-content: space-evenly;
+                --mb-component-button-size: 48px;
+                --mb-component-button-border-radius: 24px;
+                */
+            }
         </style>
     </head>
     <body>
         <photopay-in-browser
-            license-key="sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHlVKjc9YGS1TbhKMOp/628Nz+3wucEKOKiY/6REBB0awpfPXXng8x6oFT8mEe+eFZwM6UTZKMO58PYWB2BUoq3KuLZWA0iIrN5l0EOTf4y0aTFs1KXROvrx2TbPyeNjYtPqtuMZq7Mo6L0GGWp5zehmxpUnuWBsW8/tR/8NLpfFQHucZnA+nnsS3Oj/qzbaf96oTjl1Ov4T4WVRbNK4yjzUre+L+NleOrZygXTQnqPLtPnhKmoHjJ9dtyTRp1C89NxNHUqVeacwp0Q8v+plPxr+fS8zSCMVeEWgumsmmLhFiaFLxHQ14VPYB+ycRpMi6FAZVPNXPbXtfjWi0g=="
+            license-key="sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHnVLccTzWKAOwpqo/kZnt9RuJ49wvrYu8FtZKzz8HgrRLLuFu8Aa/A0dJ7yS2tBJcItgkvFU0/aXqXxPPzGDL1K6IlISV7+35V2/+b6afrp5EST/AhZrCJ/lt7hUGNkHLvQQkz+gVMaYOA2A3bcw7XzvdAS3NE/fEIPhQflM9BYZFHyXqb836jYE9OEs+mytFnhq+CnzclDctzAd0PGOcjdsy6msxwC2HtpJGcbc/NK5vxq8MsMQxbq4dBzoKShyhmmUp6m7up6xLn5JXEJkk2A39L33Yv2vaREj51/DyhPkkfbJtOKL41wL55UqYqxY4DNLBYuXHy5RDZgmi0="
             recognizers="CroatiaPdf417PaymentRecognizer"
         ></photopay-in-browser>
 
@@ -44,15 +61,7 @@
                 // Important: if attributes or properties are changed, whole component is rerendered
                 const photopay = document.querySelector( "photopay-in-browser" );
 
-                /* [TEMPORARY FIX]
-                 * Use basic WebAssembly builds since most performant option requires server setup and unpkg.com, which is used
-                 * for examples, doesn't support COOP and COEP headers.
-                 *
-                 * For more information see "Integration" section in the official documentation.
-                 */
-                photopay.wasmType = "BASIC";
-
-                photopay.engineLocation = window.location.origin + "/resources/";
+                photopay.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.7/resources";
 
                 photopay.addEventListener
                 (
