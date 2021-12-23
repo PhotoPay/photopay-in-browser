@@ -3,3 +3,4 @@
  */
 
 export const defaultWasmModuleName = "PhotoPayWasmSDK";
+export const nativeJsonizationEnabled = false;
