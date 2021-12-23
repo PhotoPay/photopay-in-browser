@@ -18,12 +18,6 @@
         "description": "Additions to boost/config for additional compiler-specific codegen tweaking macros"
     },
     {
-        "package": "Eigen/3.3.9.1@microblink/stable",
-        "url": "https://github.com/microblink/eigen-git-mirror",
-        "license": "Mozilla Public License Version 2.0",
-        "description": "Eigen is a C++ template library for linear algebra: vectors, matrices, and related algorithms. It is versatile, fast, elegant and works on many platforms (OS/Compilers)."
-    },
-    {
         "package": "Err/1.1.4@microblink/stable",
         "url": "https://github.com/microblink/err",
         "license": "Boost Software License",
@@ -84,7 +78,7 @@
         "description": "A fast JSON parser/generator for C++ with both SAX/DOM style API"
     },
     {
-        "package": "Sweater/10.1.0@microblink/stable",
+        "package": "Sweater/10.1.1@microblink/stable",
         "url": "https://github.com/microblink/sweater",
         "license": "MIT",
         "description": "Humble Outer Dispatch"
@@ -94,12 +88,6 @@
         "url": "https://github.com/microblink/utfcpp",
         "license": "Boost Software License 1.0",
         "description": "UTF-8 with C++ in a Portable Way"
-    },
-    {
-        "package": "XNNPACK/20210616.1@microblink/stable",
-        "url": "https://github.com/microblink/XNNPACK",
-        "license": "BSD",
-        "description": "XNNPACK library"
     },
     {
         "package": "ZXing/3.0.1@microblink/stable",
@@ -148,11 +136,5 @@
         "url": "https://github.com/ericniebler/range-v3",
         "license": "Boost Software License - Version 1.0 - August 17th, 2003",
         "description": "Experimental range library for C++11/14/17"
-    },
-    {
-        "package": "tinyxml2/2.2.1@microblink/stable",
-        "url": "https://github.com/microblink/tinyxml2",
-        "license": "Zlib",
-        "description": "a simple, small, efficient, C++ XML parser"
     }
 ]

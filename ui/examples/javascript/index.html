@@ -7,7 +7,7 @@
 
         <!-- Import UI component which includes WASM library -->
         <!-- Keep in mind that Unpkg CDN is used for demonstration, it's not intended to be used in production! -->
-        <script type="module" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.7/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
+        <script type="module" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.8/ui/dist/photopay-in-browser/photopay-in-browser.esm.js"></script>
         <style type="text/css">
             html,
             body {
@@ -50,51 +50,49 @@
         </style>
     </head>
     <body>
-        <photopay-in-browser
-            license-key="sRwAAAYJbG9jYWxob3N0r/lOPk4/w35CpHnVLccTzWKAOwpqo/kZnt9RuJ49wvrYu8FtZKzz8HgrRLLuFu8Aa/A0dJ7yS2tBJcItgkvFU0/aXqXxPPzGDL1K6IlISV7+35V2/+b6afrp5EST/AhZrCJ/lt7hUGNkHLvQQkz+gVMaYOA2A3bcw7XzvdAS3NE/fEIPhQflM9BYZFHyXqb836jYE9OEs+mytFnhq+CnzclDctzAd0PGOcjdsy6msxwC2HtpJGcbc/NK5vxq8MsMQxbq4dBzoKShyhmmUp6m7up6xLn5JXEJkk2A39L33Yv2vaREj51/DyhPkkfbJtOKL41wL55UqYqxY4DNLBYuXHy5RDZgmi0="
-            recognizers="CroatiaPdf417PaymentRecognizer"
-        ></photopay-in-browser>
+        <photopay-in-browser license-key="sRwAAAYJbG9jYWxob3N0r/lOPgo/w35CpHnVLc89ZsFrMIIID/JQA+igLP4+OC1w/+UyDWPWDNzOj/F1E4DjRo374jIjTVF7KBobS7rqHDaswP4oefrJgPVeeXBEM7HMUbB+8efr+6lWa3OtPxjfp8rINb63fSjxkEN9SEvUUDLqAavDnAlTb9+7HkguuRcFXsZBGX8xWmEUCYFtx+DBvI2Lcg==" recognizers="CroatiaPdf417PaymentRecognizer"></photopay-in-browser>
 
         <script type="text/javascript">
-            function run()
-            {
-                // Important: if attributes or properties are changed, whole component is rerendered
-                const photopay = document.querySelector( "photopay-in-browser" );
 
-                photopay.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.7/resources";
+function run()
+{
+  // Important: if attributes or properties are changed, whole component is rerendered
+  const photopay = document.querySelector("photopay-in-browser");
 
-                photopay.addEventListener
-                (
-                    "fatalError",
-                    ev => console.log( "fatalError", ev.detail )
-                );
+  photopay.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.8/resources";
 
-                photopay.addEventListener
-                (
-                    "ready",
-                    ev => console.log( "ready", ev.detail )
-                );
+  photopay.addEventListener(
 
-                photopay.addEventListener
-                (
-                    "scanError",
-                    ev => console.log( "scanError", ev.detail )
-                );
+  "fatalError",
+  (ev) => console.log("fatalError", ev.detail));
 
-                photopay.addEventListener
-                (
-                    "scanSuccess",
-                    ev => console.log( "scanSuccess", ev.detail )
-                );
 
-                photopay.addEventListener
-                (
-                    "feedback",
-                    ev => console.log( "feedback", ev.detail )
-                );
-            }
+  photopay.addEventListener(
 
-            window.addEventListener( "DOMContentLoaded", ev => run() );
-        </script>
+  "ready",
+  (ev) => console.log("ready", ev.detail));
+
+
+  photopay.addEventListener(
+
+  "scanError",
+  (ev) => console.log("scanError", ev.detail));
+
+
+  photopay.addEventListener(
+
+  "scanSuccess",
+  (ev) => console.log("scanSuccess", ev.detail));
+
+
+  photopay.addEventListener(
+
+  "feedback",
+  (ev) => console.log("feedback", ev.detail));
+
+}
+
+window.addEventListener("DOMContentLoaded", (ev) => run());
+</script>
     </body>
 </html>

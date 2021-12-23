@@ -4,7 +4,9 @@
 
 import { EventEmitter } from '@stencil/core';
 
-import * as PhotoPaySDK from '../../../es/photopay-sdk';
+import * as PhotoPaySDK from '@microblink/photopay-in-browser-sdk';
+
+export { SDKError } from '@microblink/photopay-in-browser-sdk';
 
 export interface MicroblinkUI {
   // SDK settings
@@ -48,7 +50,7 @@ export interface MicroblinkUI {
   iconGalleryScanningCompleted:     string;
 
   // Events
-  fatalError:         EventEmitter<EventFatalError>;
+  fatalError:         EventEmitter<PhotoPaySDK.SDKError>;
   ready:              EventEmitter<EventReady>;
   scanError:          EventEmitter<EventScanError>;
   scanSuccess:        EventEmitter<EventScanSuccess>;
@@ -69,21 +71,6 @@ export interface SdkSettings {
 /**
  * Events
  */
-export class EventFatalError {
-  code:     Code;
-  message:  string;
-  details?: any;
-
-  constructor(code: Code, message: string, details?: any) {
-    this.code = code;
-    this.message = message;
-
-    if (details) {
-      this.details = details;
-    }
-  }
-}
-
 export class EventReady {
   sdk: PhotoPaySDK.WasmSDK;
 
@@ -97,12 +84,17 @@ export class EventScanError {
   fatal:          boolean;
   message:        string;
   recognizerName: string;
+  details?:       any;
 
-  constructor(code: Code, fatal: boolean, message: string, recognizerName: string) {
+  constructor(code: Code, fatal: boolean, message: string, recognizerName: string, details?: any) {
     this.code = code;
     this.fatal = fatal;
     this.message = message;
     this.recognizerName = recognizerName;
+
+    if (details) {
+      this.details = details;
+    }
   }
 }
 
@@ -134,21 +126,15 @@ export interface RecognitionResults {
  * Error codes
  */
 export enum Code {
-  BrowserNotSupported       = 'BROWSER_NOT_SUPPORTED',
   EmptyResult               = 'EMPTY_RESULT',
-  InvalidRecognizers        = 'INVALID_RECOGNIZERS',
   InvalidRecognizerOptions  = 'INVALID_RECOGNIZER_OPTIONS',
-  MissingLicenseKey         = 'MISSING_LICENSE_KEY',
   NoImageFileFound          = 'NO_IMAGE_FILE_FOUND',
   NoFirstImageFileFound     = 'NO_FIRST_IMAGE_FILE_FOUND',
   NoSecondImageFileFound    = 'NO_SECOND_IMAGE_FILE_FOUND',
-  SdkLoadFailed             = 'SDK_LOAD_FAILED',
   GenericScanError          = 'GENERIC_SCAN_ERROR',
   CameraNotAllowed          = 'CAMERA_NOT_ALLOWED',
   CameraInUse               = 'CAMERA_IN_USE',
   CameraGenericError        = 'CAMERA_GENERIC_ERROR',
-  InternetNotAvailable      = 'INTERNET_NOT_AVAILABLE',
-  LicenseError              = 'LICENSE_ERROR'
 }
 
 /**
@@ -177,7 +163,7 @@ export interface VideoRecognitionConfiguration {
   recognitionTimeout?: number,
   successFrame: boolean,
   cameraFeed: HTMLVideoElement,
-  cameraId: string | null;
+  cameraId: string | null
 }
 
 export interface ImageRecognitionConfiguration {
@@ -256,7 +242,8 @@ export interface RecognitionResults {
   recognizer:     PhotoPaySDK.RecognizerResult,
   recognizerName: string,
   successFrame?:  PhotoPaySDK.SuccessFrameGrabberRecognizerResult,
-  imageCapture?:  boolean
+  imageCapture?:  boolean,
+  resultJSON?:    any
 }
 
 export enum CameraExperience {
@@ -319,5 +306,5 @@ export interface FeedbackMessage {
  */
 export interface CameraEntry {
   prettyName: string;
-  details: PhotoPaySDK.SelectedCamera;
+  details: PhotoPaySDK.SelectedCamera | null;
 }
