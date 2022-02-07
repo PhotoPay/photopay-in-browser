@@ -1,5 +1,9 @@
 # Release notes
 
+## 7.7.9
+
+* We've updated Microblink logo and colors
+
 ## 7.7.8
 
 ### Platform-related SDK changes

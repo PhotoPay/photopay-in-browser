@@ -32,7 +32,7 @@ function main() {
     }
 
     // 1. It's possible to obtain a free trial license key on microblink.com
-    const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPgo/w35CpHnVLc89ZsFrMIIID/JQA+igLP4+OC1w/+UyDWPWDNzOj/F1E4DjRo374jIjTVF7KBobS7rqHDaswP4oefrJgPVeeXBEM7HMUbB+8efr+6lWa3OtPxjfp8rINb63fSjxkEN9SEvUUDLqAavDnAlTb9+7HkguuRcFXsZBGX8xWmEUCYFtx+DBvI2Lcg==";
+    const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPgo/w35CpHnVLZc/Zv6pLBo5ZvwJFaM3ZjQrU0vLlpL/zASv/9C8h4qLCQxHz/lzLj57TZmZrjtZt9rxDp++uMb3vHGgq2lhIZ4AKQkSfgqZpjbYMH4EWMDeDITcZCCCN5jpU4eZR/HcfRXBTJOImwM99APTz++jWQXxNGqWdM0qJzl5t0S9O7qwn9gPA0/kNw==";
 
     // 2. Create instance of SDK load settings with your license key
     const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings(licenseKey);
