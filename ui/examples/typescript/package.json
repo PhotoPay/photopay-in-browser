@@ -19,6 +19,6 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "@microblink/photopay-in-browser-sdk": "~7.7.8"
+    "@microblink/photopay-in-browser-sdk": "~7.7.9"
   }
 }

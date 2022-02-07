@@ -24,7 +24,7 @@
     </body>
     
     <!-- Keep in mind that Unpkg CDN is used for demonstration, it's not intended to be used in production! -->
-    <script type="text/javascript" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.8/dist/photopay-sdk.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.9/dist/photopay-sdk.js"></script>
     <script type="text/javascript">
 
 /**
@@ -57,7 +57,7 @@ function main()
   }
 
   // 1. It's possible to obtain a free trial license key on microblink.com
-  const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPgo/w35CpHnVLc89ZsFrMIIID/JQA+igLP4+OC1w/+UyDWPWDNzOj/F1E4DjRo374jIjTVF7KBobS7rqHDaswP4oefrJgPVeeXBEM7HMUbB+8efr+6lWa3OtPxjfp8rINb63fSjxkEN9SEvUUDLqAavDnAlTb9+7HkguuRcFXsZBGX8xWmEUCYFtx+DBvI2Lcg==";
+  const licenseKey = "sRwAAAYJbG9jYWxob3N0r/lOPgo/w35CpHnVLZc/Zv6pLBo5ZvwJFaM3ZjQrU0vLlpL/zASv/9C8h4qLCQxHz/lzLj57TZmZrjtZt9rxDp++uMb3vHGgq2lhIZ4AKQkSfgqZpjbYMH4EWMDeDITcZCCCN5jpU4eZR/HcfRXBTJOImwM99APTz++jWQXxNGqWdM0qJzl5t0S9O7qwn9gPA0/kNw==";
 
   // 2. Create instance of SDK load settings with your license key
   const loadSettings = new PhotoPaySDK.WasmSDKLoadSettings(licenseKey);
@@ -71,7 +71,7 @@ function main()
   loadSettings.loadProgressCallback = (progress) => progressEl.value = progress;
 
   // Set absolute location of the engine, i.e. WASM and support JS files
-  loadSettings.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.8/resources";
+  loadSettings.engineLocation = "https://unpkg.com/@microblink/photopay-in-browser-sdk@7.7.9/resources";
 
   // 3. Load SDK
   PhotoPaySDK.loadWasmModule(loadSettings).then(
