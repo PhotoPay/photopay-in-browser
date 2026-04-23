@@ -1,3 +1,17 @@
+# ⚠️ Project Status: Maintenance Mode
+
+This product is currently in maintenance mode. It is no longer receiving new features or major enhancements.
+
+What this means:
+
+- *Support*: Essential support and critical bug fixes will continue with a yearly product updates.
+
+- *Security*: Security patches will be applied as needed to ensure the product remains safe and functional.
+
+- *Development*: No new feature requests or non-critical enhancements will be considered at this time.
+
+Our goal is to provide a stable, reliable experience for our existing customers while focusing our development efforts on other initiatives.
+
 # _PhotoPay_ In-browser SDK
 
 [![Build Status](https://travis-ci.org/PhotoPay/photopay-in-browser.svg?branch=master)](https://travis-ci.org/PhotoPay/photopay-in-browser) [![npm version](https://badge.fury.io/js/%40microblink%2Fphotopay-in-browser-sdk.svg)](https://badge.fury.io/js/%40microblink%2Fphotopay-in-browser-sdk)
